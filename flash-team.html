@@ -1797,11 +1797,9 @@ function mostrarEstado(estado) {
 }
 
 // ── QR SEM BIBLIOTECA EXTERNA ──
-// Usa a API nativa BarcodeDetector (Android/Chrome) com fallback para canvas+token
 let barcodeDetectorSupported = null;
 
 async function lerQRDaFoto(imgElement) {
-  // Método 1: BarcodeDetector API nativa (Android Chrome, Safari 17+)
   if (barcodeDetectorSupported === null) {
     barcodeDetectorSupported = ('BarcodeDetector' in window);
   }
@@ -1814,25 +1812,6 @@ async function lerQRDaFoto(imgElement) {
       barcodeDetectorSupported = false;
     }
   }
-
-  // Método 2: Canvas + análise de pixels para detectar o token Flash Team
-  // Cria canvas e desenha a imagem
-  const canvas = document.createElement('canvas');
-  const tamanhos = [
-    { w: imgElement.naturalWidth, h: imgElement.naturalHeight },
-    { w: 600, h: Math.round(600 * imgElement.naturalHeight / imgElement.naturalWidth) },
-    { w: 300, h: Math.round(300 * imgElement.naturalHeight / imgElement.naturalWidth) },
-  ];
-
-  for (const t of tamanhos) {
-    canvas.width = t.w;
-    canvas.height = t.h;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imgElement, 0, 0, t.w, t.h);
-  }
-
-  // Fallback: se o usuário fotografou o QR Code oficial retorna o token
-  // (em produção real usaria backend para decodificar)
   return null;
 }
 
@@ -1848,8 +1827,6 @@ async function processarFotoQR(event) {
     const img = new Image();
     img.onload = async () => {
       let resultado = null;
-
-      // Tenta BarcodeDetector nativo
       try {
         resultado = await lerQRDaFoto(img);
       } catch(e) {}
@@ -1857,36 +1834,14 @@ async function processarFotoQR(event) {
       if (resultado) {
         processarQR(resultado);
       } else {
-        // Fallback: verifica se é claramente uma foto de QR Code
-        // e pede confirmação manual como segurança adicional
-        mostrarConfirmacaoManual();
+        // Não reconheceu — não permite confirmação manual
+        mostrarResultado(false, 'QR Code não reconhecido. Fotografe o QR Code oficial fixado na parede da academia. Certifique-se de boa iluminação e foco.');
       }
     };
     img.onerror = () => mostrarResultado(false, 'Erro ao processar imagem. Tente novamente.');
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
-}
-
-function mostrarConfirmacaoManual() {
-  mostrarEstado('resultado');
-  document.getElementById('pres-resultado').innerHTML = `
-    <div class="card" style="text-align:center;padding:24px">
-      <div style="font-size:40px;margin-bottom:12px">📷</div>
-      <div style="font-size:15px;font-weight:700;margin-bottom:8px">Foto recebida!</div>
-      <div style="font-size:13px;color:var(--gray-3);margin-bottom:20px">
-        Você fotografou o QR Code da academia?<br>Confirme para registrar sua presença.
-      </div>
-      <div class="row-btns">
-        <button class="btn btn-ghost" onclick="mostrarEstado('idle')">✕ Cancelar</button>
-        <button class="btn btn-primary" onclick="confirmarPresencaManual()">✅ SIM, CONFIRMAR</button>
-      </div>
-    </div>
-  `;
-}
-
-function confirmarPresencaManual() {
-  processarQR(QR_TOKEN_VALIDO);
 }
 
 function processarQR(conteudo) {
@@ -1971,7 +1926,7 @@ function cobrarWhatsapp(userId) {
 }
 
 function abrirContato() {
-  window.open(`https://wa.me/5511999990001?text=${encodeURIComponent('Olá, preciso de ajuda com minha conta na Flash Team 🥋')}`, '_blank');
+  window.open(`https://wa.me/5567991504822?text=${encodeURIComponent('Olá Professor Pedro, preciso de ajuda com minha conta na Flash Team 🥋')}`, '_blank');
 }
 
 function copiarPix() {
