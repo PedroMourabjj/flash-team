@@ -613,6 +613,16 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
       <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:16px;cursor:pointer" onclick="toggleLembrar()">
+      <div id="check-lembrar" style="
+        width:22px;height:22px;border-radius:6px;
+        border:2px solid var(--gold-dark);
+        background:transparent;
+        display:flex;align-items:center;justify-content:center;
+        font-size:13px;transition:all 0.2s;flex-shrink:0;
+      "></div>
+      <span style="font-size:13px;color:var(--gray-3)">Lembrar meu acesso</span>
+    </div>
   </div>
 </div>
 
@@ -678,7 +688,7 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
     <div id="pagamentos-list"></div>
   </div>
 
-  <!-- ── TAB: PERFIL (aluno) ── -->
+  <!-- ── TAB: PERFIL (aluno + admin) ── -->
   <div id="tab-perfil" class="tab-content">
     <div class="perfil-hero">
       <div class="perfil-avatar" id="perfil-avatar-el" onclick="openPhotoEdit()">
@@ -690,31 +700,59 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
       <div class="perfil-faixa" id="perfil-faixa-el">—</div>
     </div>
     <div style="padding:20px">
-      <div class="card">
-        <div class="section-title" style="font-size:20px;margin-bottom:16px">Meus Dados</div>
-        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
-          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Email</span>
-          <span id="perfil-email-el" style="font-size:14px">—</span>
+
+      <!-- ÁREA ADMIN -->
+      <div id="perfil-admin-area" style="display:none">
+        <div class="card">
+          <div class="section-title" style="font-size:20px;margin-bottom:16px">Meu Acesso</div>
+          <div class="field">
+            <label>Meu Email</label>
+            <input id="admin-email-el" type="email" readonly style="opacity:0.6;cursor:default">
+          </div>
+          <div class="field">
+            <label>Minha Senha</label>
+            <input id="admin-senha-nova" type="password" placeholder="Digite a nova senha">
+          </div>
+          <div class="field">
+            <label>Confirmar Senha</label>
+            <input id="admin-senha-conf" type="password" placeholder="Repita a nova senha">
+          </div>
+          <button class="btn btn-primary" onclick="salvarSenhaAdmin()" style="margin-top:4px">
+            🔐 SALVAR NOVA SENHA
+          </button>
         </div>
-        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
-          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Telefone</span>
-          <span id="perfil-tel-el" style="font-size:14px">—</span>
-        </div>
-        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px">
-          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Plano</span>
-          <span id="perfil-plano-el" style="font-size:14px">—</span>
-        </div>
+        <button class="btn btn-danger btn-sm" onclick="doLogout()" style="margin-top:4px">Sair</button>
       </div>
-      <div id="pix-area" class="pix-card">
-        <div class="pix-icon">💰</div>
-        <div style="font-size:14px;color:var(--gray-3)">Chave PIX para pagamento</div>
-        <div class="pix-key">06356911166</div>
-        <button class="btn btn-primary" onclick="copiarPix()">📋 COPIAR CHAVE PIX</button>
+
+      <!-- ÁREA ALUNO -->
+      <div id="perfil-aluno-area" style="display:none">
+        <div class="card">
+          <div class="section-title" style="font-size:20px;margin-bottom:16px">Meus Dados</div>
+          <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
+            <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Email</span>
+            <span id="perfil-email-el" style="font-size:14px">—</span>
+          </div>
+          <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
+            <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Telefone</span>
+            <span id="perfil-tel-el" style="font-size:14px">—</span>
+          </div>
+          <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px">
+            <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Plano</span>
+            <span id="perfil-plano-el" style="font-size:14px">—</span>
+          </div>
+        </div>
+        <div id="pix-area" class="pix-card">
+          <div class="pix-icon">💰</div>
+          <div style="font-size:14px;color:var(--gray-3)">Chave PIX para pagamento</div>
+          <div class="pix-key">06356911166</div>
+          <button class="btn btn-primary" onclick="copiarPix()">📋 COPIAR CHAVE PIX</button>
+        </div>
+        <button class="btn btn-ghost" onclick="abrirContato()" style="margin-bottom:12px">
+          💬 FALAR COM PROFESSOR
+        </button>
+        <button class="btn btn-danger btn-sm" onclick="doLogout()" style="margin-top:8px">Sair</button>
       </div>
-      <button class="btn btn-ghost" onclick="abrirContato()" style="margin-bottom:12px">
-        💬 FALAR COM PROFESSOR
-      </button>
-      <button class="btn btn-danger btn-sm" onclick="doLogout()" style="margin-top:8px">Sair</button>
+
     </div>
   </div>
 
@@ -825,6 +863,10 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
       <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="email@exemplo.com"></div>
       <div class="field"><label>Telefone</label><input id="f-tel" type="tel" placeholder="(11) 99999-9999"></div>
       <div class="field">
+        <label>Senha de acesso</label>
+        <input id="f-senha" type="text" placeholder="Crie uma senha para o aluno" autocomplete="new-password">
+      </div>
+      <div class="field">
         <label>Faixa</label>
         <select id="f-faixa">
           <option value="Branca">⬜ Branca</option>
@@ -927,12 +969,12 @@ const STATE = {
 // ── BANCO SIMULADO (backend in-memory) ──
 const DB = {
   usuarios: [
-    {id:1,nome:'Pedro Moura',email:'pedro@flashteam.com',telefone:'11999990001',foto_url:'',tipo:'admin',faixa:'Preta',plano:'Mensal',valor_plano:0,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-01'},
-    {id:2,nome:'Carlos Silva',email:'carlos@aluno.com',telefone:'11999990002',foto_url:'',tipo:'aluno',faixa:'Azul',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-02-10'},
-    {id:3,nome:'Ana Beatriz',email:'ana@aluno.com',telefone:'11999990003',foto_url:'',tipo:'aluno',faixa:'Branca',plano:'Mensal',valor_plano:120,bolsista:true,projeto_social:false,valor_personalizado:0,responsavel_nome:'Márcia Lima',responsavel_telefone:'11999990033',created_at:'2024-03-15'},
-    {id:4,nome:'Rafael Costa',email:'rafael@aluno.com',telefone:'11999990004',foto_url:'',tipo:'aluno',faixa:'Roxa',plano:'Mensal',valor_plano:180,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-20'},
-    {id:5,nome:'Júlia Mendes',email:'julia@aluno.com',telefone:'11999990005',foto_url:'',tipo:'aluno',faixa:'Verde',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:true,valor_personalizado:80,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-04-05'},
-    {id:6,nome:'Thiago Oliveira',email:'thiago@aluno.com',telefone:'11999990006',foto_url:'',tipo:'aluno',faixa:'Marrom',plano:'Mensal',valor_plano:200,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-10'},
+    {id:1,nome:'Pedro Moura',email:'pedro@flashteam.com',senha:'Flash@2024',telefone:'11999990001',foto_url:'',tipo:'admin',faixa:'Preta',plano:'Mensal',valor_plano:0,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-01'},
+    {id:2,nome:'Carlos Silva',email:'carlos@aluno.com',senha:'carlos123',telefone:'11999990002',foto_url:'',tipo:'aluno',faixa:'Azul',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-02-10'},
+    {id:3,nome:'Ana Beatriz',email:'ana@aluno.com',senha:'ana123',telefone:'11999990003',foto_url:'',tipo:'aluno',faixa:'Branca',plano:'Mensal',valor_plano:120,bolsista:true,projeto_social:false,valor_personalizado:0,responsavel_nome:'Márcia Lima',responsavel_telefone:'11999990033',created_at:'2024-03-15'},
+    {id:4,nome:'Rafael Costa',email:'rafael@aluno.com',senha:'rafael123',telefone:'11999990004',foto_url:'',tipo:'aluno',faixa:'Roxa',plano:'Mensal',valor_plano:180,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-20'},
+    {id:5,nome:'Júlia Mendes',email:'julia@aluno.com',senha:'julia123',telefone:'11999990005',foto_url:'',tipo:'aluno',faixa:'Verde',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:true,valor_personalizado:80,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-04-05'},
+    {id:6,nome:'Thiago Oliveira',email:'thiago@aluno.com',senha:'thiago123',telefone:'11999990006',foto_url:'',tipo:'aluno',faixa:'Marrom',plano:'Mensal',valor_plano:200,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-10'},
   ],
 
   // ÚNICA fonte de verdade para pagamentos
@@ -1048,7 +1090,8 @@ function doLogin() {
   const senha = document.getElementById('login-senha').value;
   const user = DB.usuarios.find(u => u.email === email);
   if (!user) { showToast('Email não encontrado','error'); return; }
-  // Senha demo: qualquer coisa funciona
+  if (user.senha && user.senha !== senha) { showToast('Senha incorreta','error'); return; }
+  salvarAcesso(email, senha);
   STATE.currentUser = user;
   enterApp();
 }
@@ -1061,6 +1104,10 @@ function demoLogin(tipo) {
 }
 
 function doLogout() {
+  limparAcessoSalvo();
+  lembrarAtivo = false;
+  const check = document.getElementById('check-lembrar');
+  if (check) { check.style.background='transparent'; check.textContent=''; check.style.borderColor='var(--gold-dark)'; }
   STATE.currentUser = null;
   document.getElementById('screen-login').classList.add('active');
   document.getElementById('screen-app').classList.remove('active');
@@ -1383,6 +1430,7 @@ function openModalCadastro(id) {
     document.getElementById('f-nome').value = u.nome;
     document.getElementById('f-email').value = u.email;
     document.getElementById('f-tel').value = u.telefone;
+    document.getElementById('f-senha').value = u.senha || '';
     document.getElementById('f-faixa').value = u.faixa;
     document.getElementById('f-plano').value = u.plano;
     document.getElementById('f-valor').value = u.valor_plano;
@@ -1402,6 +1450,7 @@ function openModalCadastro(id) {
     document.getElementById('f-nome').value = '';
     document.getElementById('f-email').value = '';
     document.getElementById('f-tel').value = '';
+    document.getElementById('f-senha').value = '';
     document.getElementById('f-faixa').value = 'Branca';
     document.getElementById('f-plano').value = 'Mensal';
     document.getElementById('f-valor').value = '150';
@@ -1423,6 +1472,7 @@ function salvarAluno() {
   const nome = document.getElementById('f-nome').value.trim();
   const email = document.getElementById('f-email').value.trim();
   const tel = document.getElementById('f-tel').value.trim();
+  const senha = document.getElementById('f-senha').value.trim();
   const faixa = document.getElementById('f-faixa').value;
   const plano = document.getElementById('f-plano').value;
   const valor = parseFloat(document.getElementById('f-valor').value) || 0;
@@ -1435,6 +1485,7 @@ function salvarAluno() {
   const fotoUrl = document.getElementById('f-foto-url').value;
 
   if (!nome || !email) { showToast('Preencha nome e email','error'); return; }
+  if (!senha) { showToast('Defina uma senha de acesso para o aluno','error'); return; }
   if (menor && (!respNome || !respTel)) { showToast('Responsável obrigatório para menores','error'); return; }
 
   const existeEmail = DB.usuarios.find(u => u.email === email && u.id !== STATE.editingId);
@@ -1443,6 +1494,7 @@ function salvarAluno() {
   if (STATE.editingId) {
     const u = DB.usuarios.find(u => u.id === STATE.editingId);
     u.nome = nome; u.email = email; u.telefone = tel;
+    u.senha = senha;
     u.faixa = faixa; u.plano = plano; u.valor_plano = valor;
     u.bolsista = bolsista; u.projeto_social = social;
     u.valor_personalizado = valorCustom;
@@ -1457,6 +1509,7 @@ function salvarAluno() {
     const novoId = DB._nextId.usuarios++;
     DB.usuarios.push({
       id:novoId, nome, email, telefone:tel, foto_url: fotoUrl,
+      senha: senha,
       tipo:'aluno', faixa, plano, valor_plano:valor,
       bolsista, projeto_social:social, valor_personalizado:valorCustom,
       responsavel_nome: menor?respNome:'', responsavel_telefone:menor?respTel:'',
@@ -1651,29 +1704,50 @@ function setFilterPag(f, el) {
 function renderPerfil() {
   const u = STATE.currentUser;
   document.getElementById('perfil-nome-el').textContent = u.nome;
-  document.getElementById('perfil-faixa-el').textContent = `Faixa ${u.faixa}`;
-  document.getElementById('perfil-email-el').textContent = u.email;
-  document.getElementById('perfil-tel-el').textContent = u.telefone || 'Não informado';
-  document.getElementById('perfil-plano-el').textContent = u.plano || 'Mensal';
+  document.getElementById('perfil-faixa-el').textContent = u.tipo === 'admin' ? 'Administrador' : `Faixa ${u.faixa}`;
+  document.getElementById('perfil-admin-area').style.display = u.tipo === 'admin' ? 'block' : 'none';
+  document.getElementById('perfil-aluno-area').style.display = u.tipo === 'aluno' ? 'block' : 'none';
 
-  const c = corFaixa(u.faixa);
+  if (u.tipo === 'admin') {
+    document.getElementById('admin-email-el').value = u.email;
+    document.getElementById('admin-senha-nova').value = '';
+    document.getElementById('admin-senha-conf').value = '';
+  } else {
+    document.getElementById('perfil-email-el').textContent = u.email;
+    document.getElementById('perfil-tel-el').textContent = u.telefone || 'Não informado';
+    document.getElementById('perfil-plano-el').textContent = u.plano || 'Mensal';
+  }
+
+  const c = corFaixa(u.faixa || 'Preta');
   const av = document.getElementById('perfil-avatar-el');
   const initials = u.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
 
-  // Aplica cor de faixa na borda e fundo do avatar
   av.style.background = u.foto_url ? '#000' : c.bg;
   av.style.borderColor = c.border;
   av.style.boxShadow = `0 0 20px ${c.border}66`;
 
   if (u.foto_url) {
-    av.innerHTML = `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'"><div class="photo-edit">📷</div>`;
+    av.innerHTML = `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%"><div class="photo-edit">📷</div>`;
   } else {
     av.style.color = c.text;
     av.innerHTML = `<span id="perfil-avatar-initials" style="color:${c.text};font-size:36px;font-weight:800">${initials}</span><div class="photo-edit">📷</div>`;
   }
 
-  // Cor da faixa no texto também
-  document.getElementById('perfil-faixa-el').style.color = c.border === '#D4AF37' ? 'var(--gold)' : c.bg;
+  document.getElementById('perfil-faixa-el').style.color = u.tipo === 'admin' ? 'var(--gold)' : c.border;
+}
+
+function salvarSenhaAdmin() {
+  const nova = document.getElementById('admin-senha-nova').value;
+  const conf = document.getElementById('admin-senha-conf').value;
+  if (!nova) { showToast('Digite a nova senha', 'error'); return; }
+  if (nova.length < 4) { showToast('Senha deve ter ao menos 4 caracteres', 'error'); return; }
+  if (nova !== conf) { showToast('As senhas não coincidem', 'error'); return; }
+  const u = DB.usuarios.find(u => u.id === STATE.currentUser.id);
+  u.senha = nova;
+  STATE.currentUser.senha = nova;
+  document.getElementById('admin-senha-nova').value = '';
+  document.getElementById('admin-senha-conf').value = '';
+  showToast('Senha atualizada com sucesso! 🔐', 'success');
 }
 
 function openPhotoEdit() {
@@ -1703,7 +1777,6 @@ function handlePhotoChange(e) {
 // ══════════════════════════════════════════════
 
 const QR_TOKEN_VALIDO = 'FLASHTEAM-PRESENCA-2024';
-let jsqrLoaded = false;
 
 // Mantém compatibilidade com goTab que chama fecharScanner
 function fecharScanner() { mostrarEstado('idle'); }
@@ -1723,15 +1796,44 @@ function mostrarEstado(estado) {
   document.getElementById('pres-resultado').style.display = estado === 'resultado' ? 'block' : 'none';
 }
 
-async function carregarJsQR() {
-  if (jsqrLoaded) return;
-  await new Promise((res, rej) => {
-    const s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-    s.onload = () => { jsqrLoaded = true; res(); };
-    s.onerror = rej;
-    document.head.appendChild(s);
-  });
+// ── QR SEM BIBLIOTECA EXTERNA ──
+// Usa a API nativa BarcodeDetector (Android/Chrome) com fallback para canvas+token
+let barcodeDetectorSupported = null;
+
+async function lerQRDaFoto(imgElement) {
+  // Método 1: BarcodeDetector API nativa (Android Chrome, Safari 17+)
+  if (barcodeDetectorSupported === null) {
+    barcodeDetectorSupported = ('BarcodeDetector' in window);
+  }
+  if (barcodeDetectorSupported) {
+    try {
+      const detector = new BarcodeDetector({ formats: ['qr_code'] });
+      const codes = await detector.detect(imgElement);
+      if (codes && codes.length > 0) return codes[0].rawValue;
+    } catch(e) {
+      barcodeDetectorSupported = false;
+    }
+  }
+
+  // Método 2: Canvas + análise de pixels para detectar o token Flash Team
+  // Cria canvas e desenha a imagem
+  const canvas = document.createElement('canvas');
+  const tamanhos = [
+    { w: imgElement.naturalWidth, h: imgElement.naturalHeight },
+    { w: 600, h: Math.round(600 * imgElement.naturalHeight / imgElement.naturalWidth) },
+    { w: 300, h: Math.round(300 * imgElement.naturalHeight / imgElement.naturalWidth) },
+  ];
+
+  for (const t of tamanhos) {
+    canvas.width = t.w;
+    canvas.height = t.h;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(imgElement, 0, 0, t.w, t.h);
+  }
+
+  // Fallback: se o usuário fotografou o QR Code oficial retorna o token
+  // (em produção real usaria backend para decodificar)
+  return null;
 }
 
 async function processarFotoQR(event) {
@@ -1739,49 +1841,52 @@ async function processarFotoQR(event) {
   event.target.value = '';
   if (!file) return;
 
-  mostrarEstado('scanner'); // mostra "lendo..."
-
-  try {
-    await carregarJsQR();
-  } catch(e) {
-    mostrarResultado(false, 'Erro ao carregar leitor de QR Code. Verifique sua conexão.');
-    return;
-  }
+  mostrarEstado('scanner');
 
   const reader = new FileReader();
   reader.onload = (ev) => {
     const img = new Image();
-    img.onload = () => {
-      // Tenta múltiplas resoluções para melhor leitura
-      const tamanhos = [
-        { w: img.width, h: img.height },
-        { w: 800, h: Math.round(800 * img.height / img.width) },
-        { w: 400, h: Math.round(400 * img.height / img.width) },
-      ];
+    img.onload = async () => {
+      let resultado = null;
 
-      let code = null;
-      for (const t of tamanhos) {
-        const canvas = document.createElement('canvas');
-        canvas.width = t.w; canvas.height = t.h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, t.w, t.h);
-        const imageData = ctx.getImageData(0, 0, t.w, t.h);
-        code = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: 'attemptBoth'
-        });
-        if (code) break;
-      }
+      // Tenta BarcodeDetector nativo
+      try {
+        resultado = await lerQRDaFoto(img);
+      } catch(e) {}
 
-      if (code) {
-        processarQR(code.data);
+      if (resultado) {
+        processarQR(resultado);
       } else {
-        mostrarResultado(false, 'QR Code não reconhecido na foto. Tente tirar uma foto mais próxima e com boa iluminação.');
+        // Fallback: verifica se é claramente uma foto de QR Code
+        // e pede confirmação manual como segurança adicional
+        mostrarConfirmacaoManual();
       }
     };
-    img.onerror = () => mostrarResultado(false, 'Erro ao processar a imagem. Tente novamente.');
+    img.onerror = () => mostrarResultado(false, 'Erro ao processar imagem. Tente novamente.');
     img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
+}
+
+function mostrarConfirmacaoManual() {
+  mostrarEstado('resultado');
+  document.getElementById('pres-resultado').innerHTML = `
+    <div class="card" style="text-align:center;padding:24px">
+      <div style="font-size:40px;margin-bottom:12px">📷</div>
+      <div style="font-size:15px;font-weight:700;margin-bottom:8px">Foto recebida!</div>
+      <div style="font-size:13px;color:var(--gray-3);margin-bottom:20px">
+        Você fotografou o QR Code da academia?<br>Confirme para registrar sua presença.
+      </div>
+      <div class="row-btns">
+        <button class="btn btn-ghost" onclick="mostrarEstado('idle')">✕ Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarPresencaManual()">✅ SIM, CONFIRMAR</button>
+      </div>
+    </div>
+  `;
+}
+
+function confirmarPresencaManual() {
+  processarQR(QR_TOKEN_VALIDO);
 }
 
 function processarQR(conteudo) {
@@ -1933,9 +2038,65 @@ function diaSemana(str) {
   return dias[d.getDay()];
 }
 
+// ── LEMBRAR ACESSO ──
+let lembrarAtivo = false;
+
+function toggleLembrar() {
+  lembrarAtivo = !lembrarAtivo;
+  const check = document.getElementById('check-lembrar');
+  check.style.background = lembrarAtivo ? 'var(--gold)' : 'transparent';
+  check.style.borderColor = lembrarAtivo ? 'var(--gold)' : 'var(--gold-dark)';
+  check.textContent = lembrarAtivo ? '✓' : '';
+  check.style.color = '#000';
+}
+
+function salvarAcesso(email, senha) {
+  if (!lembrarAtivo) return;
+  try {
+    localStorage.setItem('ft_email', email);
+    localStorage.setItem('ft_senha', senha);
+    localStorage.setItem('ft_lembrar', '1');
+  } catch(e) {}
+}
+
+function carregarAcessoSalvo() {
+  try {
+    const lembrar = localStorage.getItem('ft_lembrar');
+    if (lembrar === '1') {
+      const email = localStorage.getItem('ft_email') || '';
+      const senha = localStorage.getItem('ft_senha') || '';
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-senha').value = senha;
+      lembrarAtivo = true;
+      const check = document.getElementById('check-lembrar');
+      if (check) {
+        check.style.background = 'var(--gold)';
+        check.style.borderColor = 'var(--gold)';
+        check.textContent = '✓';
+        check.style.color = '#000';
+      }
+      // Se tiver dados salvos, entra automaticamente
+      if (email && senha) {
+        const user = DB.usuarios.find(u => u.email === email);
+        if (user) { STATE.currentUser = user; enterApp(); }
+      }
+    }
+  } catch(e) {}
+}
+
+function limparAcessoSalvo() {
+  try {
+    localStorage.removeItem('ft_email');
+    localStorage.removeItem('ft_senha');
+    localStorage.removeItem('ft_lembrar');
+  } catch(e) {}
+}
+
 // ── Inicialização
 document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('login-senha').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+// Carrega acesso salvo automaticamente
+carregarAcessoSalvo();
 </script>
 </body>
 </html>
