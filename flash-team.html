@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="Permissions-Policy" content="camera=*">
 <title>Flash Team — Jiu-Jitsu Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -610,10 +613,6 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
       <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
     </div>
     <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
-    <div class="demo-links" style="margin-top:16px">
-      <button class="btn btn-ghost btn-sm" onclick="demoLogin('admin')">👑 Demo Admin</button>
-      <button class="btn btn-ghost btn-sm" onclick="demoLogin('aluno')">🥋 Demo Aluno</button>
-    </div>
   </div>
 </div>
 
@@ -723,7 +722,7 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
   <div id="tab-presenca" class="tab-content">
     <div style="padding:20px">
       <div class="section-header">
-        <div><div class="section-title">Presença</div><div class="section-sub">Aponte a câmera para o QR Code</div></div>
+        <div><div class="section-title">Presença</div><div class="section-sub">Registre sua aula</div></div>
       </div>
 
       <!-- ESTADO: idle -->
@@ -731,31 +730,35 @@ hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent
         <div class="card" style="text-align:center;padding:32px 20px">
           <div style="font-size:52px;margin-bottom:12px">📷</div>
           <div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--white)">Escanear QR Code</div>
-          <div style="font-size:13px;color:var(--gray-3);margin-bottom:24px">Aponte a câmera para o QR Code fixado na parede da academia</div>
-          <button class="scan-btn pulse" onclick="abrirScanner()">📷 ABRIR CÂMERA</button>
+          <div style="font-size:13px;color:var(--gray-3);margin-bottom:24px">Tire uma foto do QR Code fixado na parede da academia</div>
+
+          <!-- Input que abre câmera nativamente em qualquer celular -->
+          <input type="file" id="qr-foto-input" accept="image/*" capture="environment"
+            onchange="processarFotoQR(event)" style="display:none">
+
+          <button class="scan-btn pulse" onclick="document.getElementById('qr-foto-input').click()">
+            📷 FOTOGRAFAR QR CODE
+          </button>
+
+          <div style="margin-top:16px">
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('qr-galeria-input').click()">
+              🖼 Escolher da Galeria
+            </button>
+            <input type="file" id="qr-galeria-input" accept="image/*"
+              onchange="processarFotoQR(event)" style="display:none">
+          </div>
+        </div>
+
+        <div class="dica" style="margin-top:0;font-size:12px">
+          💡 <strong>Como fazer:</strong> Toque em "Fotografar QR Code", aponte a câmera para o QR Code na parede e tire a foto. O sistema vai registrar sua presença automaticamente!
         </div>
       </div>
 
-      <!-- ESTADO: câmera aberta -->
-      <div id="pres-scanner" style="display:none">
-        <div style="position:relative;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:1;max-width:360px;margin:0 auto;box-shadow:0 0 32px rgba(212,175,55,0.25)">
-          <video id="qr-video" style="width:100%;height:100%;object-fit:cover;display:block" playsinline autoplay muted></video>
-          <canvas id="qr-canvas" style="display:none"></canvas>
-          <!-- mira animada -->
-          <div style="position:absolute;inset:0;pointer-events:none">
-            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;height:60%;border:2px solid var(--gold);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.45)">
-              <!-- cantos -->
-              <div style="position:absolute;top:-2px;left:-2px;width:22px;height:22px;border-top:4px solid var(--gold-light);border-left:4px solid var(--gold-light);border-radius:4px 0 0 0"></div>
-              <div style="position:absolute;top:-2px;right:-2px;width:22px;height:22px;border-top:4px solid var(--gold-light);border-right:4px solid var(--gold-light);border-radius:0 4px 0 0"></div>
-              <div style="position:absolute;bottom:-2px;left:-2px;width:22px;height:22px;border-bottom:4px solid var(--gold-light);border-left:4px solid var(--gold-light);border-radius:0 0 0 4px"></div>
-              <div style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-bottom:4px solid var(--gold-light);border-right:4px solid var(--gold-light);border-radius:0 0 4px 0"></div>
-              <!-- linha de scan -->
-              <div id="scan-line" style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scanH 1.8s linear infinite"></div>
-            </div>
-          </div>
-        </div>
-        <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--gray-3)" id="scan-status-text">Procurando QR Code...</div>
-        <button class="btn btn-ghost" onclick="fecharScanner()" style="margin-top:16px">✕ Cancelar</button>
+      <!-- ESTADO: processando -->
+      <div id="pres-scanner" style="display:none;text-align:center;padding:40px 20px">
+        <div style="font-size:48px;margin-bottom:16px">⏳</div>
+        <div style="font-size:16px;font-weight:700;color:var(--gold)">Lendo QR Code...</div>
+        <div style="font-size:13px;color:var(--gray-3);margin-top:8px">Aguarde um momento</div>
       </div>
 
       <!-- ESTADO: resultado -->
@@ -1107,8 +1110,8 @@ function buildNav() {
 }
 
 function goTab(id) {
-  // Fecha câmera se sair da aba de presença
-  if (id !== 'presenca' && scannerStream) fecharScanner();
+  // Fecha scanner se sair da aba de presença
+  if (id !== 'presenca') mostrarEstado('idle');
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   const el = document.getElementById(`tab-${id}`);
@@ -1696,110 +1699,96 @@ function handlePhotoChange(e) {
 }
 
 // ══════════════════════════════════════════════
-// ── PRESENÇA ALUNO — SCANNER REAL
+// ── PRESENÇA ALUNO — LEITURA POR FOTO
 // ══════════════════════════════════════════════
 
-// Token válido gravado no QR Code fixo na parede da academia
 const QR_TOKEN_VALIDO = 'FLASHTEAM-PRESENCA-2024';
-
-let scannerStream = null;
-let scannerRAF = null;
 let jsqrLoaded = false;
+
+// Mantém compatibilidade com goTab que chama fecharScanner
+function fecharScanner() { mostrarEstado('idle'); }
 
 function renderPresenca() {
   const u = STATE.currentUser;
   const presencas = DB.presencas
     .filter(p => p.user_id === u.id)
     .sort((a,b) => b.data.localeCompare(a.data));
-
-  // Garante estado idle ao entrar na aba
   mostrarEstado('idle');
-
-  document.getElementById('presencas-list').innerHTML = presencas.length
-    ? presencas.map(p => `
-        <div class="presenca-item">
-          <div class="presenca-dot"></div>
-          <div>
-            <div class="presenca-data">${formatData(p.data)}</div>
-            <div class="presenca-dia text-sm text-gray">${diaSemana(p.data)}</div>
-          </div>
-        </div>`).join('')
-    : `<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma presença ainda</p></div>`;
+  renderPresencaLista();
 }
 
 function mostrarEstado(estado) {
-  document.getElementById('pres-idle').style.display     = estado === 'idle'     ? 'block' : 'none';
-  document.getElementById('pres-scanner').style.display  = estado === 'scanner'  ? 'block' : 'none';
+  document.getElementById('pres-idle').style.display      = estado === 'idle'      ? 'block' : 'none';
+  document.getElementById('pres-scanner').style.display   = estado === 'scanner'   ? 'block' : 'none';
   document.getElementById('pres-resultado').style.display = estado === 'resultado' ? 'block' : 'none';
 }
 
-async function abrirScanner() {
-  mostrarEstado('scanner');
+async function carregarJsQR() {
+  if (jsqrLoaded) return;
+  await new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+    s.onload = () => { jsqrLoaded = true; res(); };
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
 
-  // Carrega jsQR dinamicamente na primeira vez
-  if (!jsqrLoaded) {
-    await new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-      s.onload = () => { jsqrLoaded = true; res(); };
-      s.onerror = rej;
-      document.head.appendChild(s);
-    });
-  }
+async function processarFotoQR(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  mostrarEstado('scanner'); // mostra "lendo..."
 
   try {
-    scannerStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
-    });
-    const video = document.getElementById('qr-video');
-    video.srcObject = scannerStream;
-    await video.play();
-    lerFrames();
+    await carregarJsQR();
   } catch(e) {
-    fecharScanner();
-    mostrarResultado(false, 'Câmera não autorizada. Permita o acesso nas configurações do navegador.');
+    mostrarResultado(false, 'Erro ao carregar leitor de QR Code. Verifique sua conexão.');
+    return;
   }
-}
 
-function lerFrames() {
-  const video  = document.getElementById('qr-video');
-  const canvas = document.getElementById('qr-canvas');
-  const ctx    = canvas.getContext('2d');
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = new Image();
+    img.onload = () => {
+      // Tenta múltiplas resoluções para melhor leitura
+      const tamanhos = [
+        { w: img.width, h: img.height },
+        { w: 800, h: Math.round(800 * img.height / img.width) },
+        { w: 400, h: Math.round(400 * img.height / img.width) },
+      ];
 
-  function tick() {
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-      canvas.width  = video.videoWidth;
-      canvas.height = video.videoHeight;
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+      let code = null;
+      for (const t of tamanhos) {
+        const canvas = document.createElement('canvas');
+        canvas.width = t.w; canvas.height = t.h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, t.w, t.h);
+        const imageData = ctx.getImageData(0, 0, t.w, t.h);
+        code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'attemptBoth'
+        });
+        if (code) break;
+      }
 
       if (code) {
-        fecharScanner();
         processarQR(code.data);
-        return; // para o loop
+      } else {
+        mostrarResultado(false, 'QR Code não reconhecido na foto. Tente tirar uma foto mais próxima e com boa iluminação.');
       }
-    }
-    scannerRAF = requestAnimationFrame(tick);
-  }
-  scannerRAF = requestAnimationFrame(tick);
-}
-
-function fecharScanner() {
-  if (scannerRAF) { cancelAnimationFrame(scannerRAF); scannerRAF = null; }
-  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
-  const video = document.getElementById('qr-video');
-  if (video) { video.srcObject = null; }
-  mostrarEstado('idle');
+    };
+    img.onerror = () => mostrarResultado(false, 'Erro ao processar a imagem. Tente novamente.');
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 function processarQR(conteudo) {
-  // Valida se é o QR Code oficial da Flash Team
   if (conteudo !== QR_TOKEN_VALIDO) {
     mostrarResultado(false, 'QR Code inválido. Use o código fixado na parede da academia.');
     return;
   }
-  // Registra presença (UNIQUE por dia)
   const u = STATE.currentUser;
   const res = registrarPresencaDB(u.id);
   mostrarResultado(res.ok, res.msg);
