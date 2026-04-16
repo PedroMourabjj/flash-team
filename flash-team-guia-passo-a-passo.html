@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Flash Team — 100% Grátis</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#D4AF37;--gold-light:#F0CD6A;--gold-dark:#A8892A;
+  --black:#080808;--black-3:#161616;--black-4:#1E1E1E;
+  --gray-3:#888;--white:#F5F0E8;--green:#43A047;--red:#E53935;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Syne',sans-serif;background:var(--black);color:var(--white);padding:24px 16px 60px;max-width:680px;margin:0 auto;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:4px;background:linear-gradient(135deg,var(--gold-light),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px;}
+.sub{font-size:13px;color:var(--gray-3);margin-bottom:10px;letter-spacing:1px;}
+.custo-zero{display:inline-block;background:rgba(67,160,71,0.15);border:1px solid rgba(67,160,71,0.35);border-radius:20px;padding:6px 18px;font-size:13px;font-weight:700;color:var(--green);letter-spacing:1px;margin-bottom:28px;}
+.dica{background:rgba(212,175,55,0.07);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:14px 16px;margin:12px 0;font-size:13px;color:var(--gold-light);line-height:1.65;}
+.alerta{background:rgba(229,57,53,0.08);border:1px solid rgba(229,57,53,0.25);border-radius:10px;padding:14px 16px;margin:12px 0;font-size:13px;color:#EF9A9A;line-height:1.65;}
+.ok{background:rgba(67,160,71,0.08);border:1px solid rgba(67,160,71,0.25);border-radius:10px;padding:14px 16px;margin:12px 0;font-size:13px;color:#A5D6A7;line-height:1.65;}
+.tabela{width:100%;border-collapse:collapse;margin-bottom:28px;font-size:13px;}
+.tabela th{text-align:left;padding:10px 12px;color:var(--gold);font-size:11px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid rgba(212,175,55,0.2);}
+.tabela td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.05);color:var(--gray-3);}
+.tabela td:first-child{color:var(--white);font-weight:600;}
+.tabela tr:last-child td{border-bottom:none;}
+.tag{display:inline-block;padding:2px 9px;border-radius:6px;font-size:11px;font-weight:700;}
+.tag-free{background:rgba(67,160,71,0.15);color:var(--green);border:1px solid rgba(67,160,71,0.3);}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.2),transparent);margin:28px 0;}
+.fase{margin-bottom:36px;}
+.fase-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.fase-num{width:38px;height:38px;border-radius:10px;flex-shrink:0;background:linear-gradient(135deg,var(--gold-dark),var(--gold));display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#000;}
+.fase-titulo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold-light);}
+.fase-sub{font-size:12px;color:var(--gray-3);margin-top:2px;}
+.step{background:var(--black-3);border:1px solid rgba(212,175,55,0.1);border-radius:14px;padding:18px 18px 18px 62px;margin-bottom:12px;position:relative;}
+.step-num{position:absolute;left:16px;top:18px;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--gold-light),var(--gold));color:#000;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;}
+.step h3{font-size:15px;font-weight:700;margin-bottom:6px;color:var(--white);}
+.step p{font-size:13px;color:var(--gray-3);line-height:1.7;}
+.step a{color:var(--gold);text-decoration:none;font-weight:600;}
+.step a:hover{text-decoration:underline;}
+.code{background:var(--black-4);border:1px solid rgba(212,175,55,0.15);border-radius:10px;padding:12px 14px;margin-top:10px;font-family:monospace;font-size:12px;color:var(--gold-light);line-height:1.7;overflow-x:auto;white-space:pre;}
+.resumo{background:linear-gradient(135deg,rgba(212,175,55,0.1),rgba(212,175,55,0.03));border:1px solid rgba(212,175,55,0.25);border-radius:20px;padding:28px 24px;margin-top:36px;text-align:center;}
+.resumo h2{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold-light);margin-bottom:12px;letter-spacing:2px;}
+.resumo p{font-size:14px;color:var(--gray-3);line-height:1.85;}
+.step-q .step-num{background:linear-gradient(135deg,#444,#333);color:#ccc;}
+</style>
+</head>
+<body>
+
+<h1>FLASH TEAM</h1>
+<div class="sub">GUIA COMPLETO — DO ZERO AO AR</div>
+<div class="custo-zero">✅ CUSTO TOTAL: R$0,00 POR MÊS</div>
+
+<div class="dica">
+  💡 <strong>Você não precisa saber programar.</strong> Este guia foi escrito para quem nunca mexeu com tecnologia. Siga cada passo na ordem, com calma, e o sistema vai funcionar de verdade.
+</div>
+
+<table class="tabela">
+  <tr><th>O que você vai usar</th><th>Para que serve</th><th>Custo</th></tr>
+  <tr><td>GitHub</td><td>Guardar os arquivos do sistema</td><td><span class="tag tag-free">Grátis</span></td></tr>
+  <tr><td>Supabase</td><td>Banco de dados — alunos, pagamentos, presenças</td><td><span class="tag tag-free">Grátis</span></td></tr>
+  <tr><td>Vercel</td><td>Colocar o sistema na internet</td><td><span class="tag tag-free">Grátis</span></td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- FASE 1 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">1</div>
+    <div>
+      <div class="fase-titulo">Criar as contas</div>
+      <div class="fase-sub">3 contas gratuitas — cerca de 10 minutos</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <h3>Criar conta no GitHub <span class="tag tag-free" style="margin-left:6px">Grátis</span></h3>
+    <p>O GitHub guarda os arquivos do sistema.<br><br>
+    👉 Acesse: <a href="https://github.com" target="_blank">github.com</a><br>
+    👉 Clique em <strong>"Sign up"</strong> (canto superior direito)<br>
+    👉 Coloque seu email, crie uma senha e um nome de usuário<br>
+    👉 Confirme o email que o GitHub vai te enviar</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <h3>Criar conta no Supabase <span class="tag tag-free" style="margin-left:6px">Grátis</span></h3>
+    <p>O Supabase guarda todos os dados: alunos, pagamentos e presenças.<br><br>
+    👉 Acesse: <a href="https://supabase.com" target="_blank">supabase.com</a><br>
+    👉 Clique em <strong>"Start your project"</strong><br>
+    👉 Clique em <strong>"Continue with GitHub"</strong><br>
+    👉 Autorize a conexão — ele vai usar sua conta GitHub que você acabou de criar</p>
+    <div class="dica">💡 Usar "Continue with GitHub" é mais fácil — não precisa criar outra senha.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <h3>Criar conta no Vercel <span class="tag tag-free" style="margin-left:6px">Grátis</span></h3>
+    <p>O Vercel coloca o sistema na internet para os alunos acessarem.<br><br>
+    👉 Acesse: <a href="https://vercel.com" target="_blank">vercel.com</a><br>
+    👉 Clique em <strong>"Sign Up"</strong><br>
+    👉 Escolha <strong>"Continue with GitHub"</strong><br>
+    👉 Autorize a conexão</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FASE 2 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">2</div>
+    <div>
+      <div class="fase-titulo">Criar o banco de dados</div>
+      <div class="fase-sub">No Supabase — onde ficam todos os dados</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <h3>Criar um novo projeto no Supabase</h3>
+    <p>👉 Dentro do Supabase, clique em <strong>"New project"</strong><br>
+    👉 Preencha assim:<br>
+    &nbsp;&nbsp;&nbsp;• <strong>Name:</strong> flash-team<br>
+    &nbsp;&nbsp;&nbsp;• <strong>Database Password:</strong> crie uma senha forte — <strong>anote ela!</strong><br>
+    &nbsp;&nbsp;&nbsp;• <strong>Region:</strong> escolha <strong>South America (São Paulo)</strong><br>
+    👉 Clique em <strong>"Create new project"</strong><br>
+    👉 Aguarde 2 minutinhos enquanto o banco é criado</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <h3>Criar as tabelas — copie e cole o código abaixo</h3>
+    <p>👉 No menu da esquerda, clique em <strong>"SQL Editor"</strong><br>
+    👉 Clique em <strong>"New query"</strong><br>
+    👉 Apague o que estiver escrito, copie TODO o código abaixo e cole lá:<br></p>
+<div class="code">-- Usuários (alunos e admin)
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  nome TEXT NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  telefone TEXT,
+  foto_url TEXT,
+  tipo TEXT DEFAULT 'aluno',
+  faixa TEXT,
+  plano TEXT,
+  valor_plano NUMERIC DEFAULT 0,
+  bolsista BOOLEAN DEFAULT false,
+  projeto_social BOOLEAN DEFAULT false,
+  valor_personalizado NUMERIC DEFAULT 0,
+  responsavel_nome TEXT,
+  responsavel_telefone TEXT,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Pagamentos (fonte única de verdade)
+CREATE TABLE pagamentos (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+  mes_referencia TEXT NOT NULL,
+  status TEXT DEFAULT 'pendente',
+  valor NUMERIC DEFAULT 0,
+  data_pagamento DATE,
+  data_vencimento DATE,
+  UNIQUE(user_id, mes_referencia)
+);
+
+-- Presenças
+CREATE TABLE presencas (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+  data DATE NOT NULL,
+  UNIQUE(user_id, data)
+);
+
+-- Admin principal
+INSERT INTO usuarios (nome, email, tipo, faixa)
+VALUES ('Pedro Moura', 'pedro@flashteam.com', 'admin', 'Preta');</div>
+    <p style="margin-top:12px">👉 Clique no botão <strong>"Run"</strong> (ou Ctrl+Enter no teclado)</p>
+    <div class="ok">✅ Se aparecer "Success" em verde — funcionou! Suas tabelas estão criadas.</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <h3>Pegar o endereço de conexão do banco</h3>
+    <p>👉 No menu da esquerda, clique no ícone de <strong>engrenagem ⚙️</strong> (Project Settings)<br>
+    👉 Clique em <strong>"Database"</strong><br>
+    👉 Role até <strong>"Connection string"</strong><br>
+    👉 Selecione a aba <strong>"URI"</strong><br>
+    👉 Copie o texto que começa com <strong>postgresql://</strong><br>
+    👉 Cole num bloco de notas e guarde bem — você vai usar depois</p>
+    <div class="alerta">⚠️ Esse texto contém sua senha. Não compartilhe com ninguém.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FASE 3 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">3</div>
+    <div>
+      <div class="fase-titulo">Enviar os arquivos ao GitHub</div>
+      <div class="fase-sub">Colocar os arquivos do sistema na nuvem</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">7</div>
+    <h3>Criar um repositório no GitHub</h3>
+    <p>👉 Acesse <a href="https://github.com" target="_blank">github.com</a> e faça login<br>
+    👉 Clique no <strong>"+"</strong> no canto superior direito → <strong>"New repository"</strong><br>
+    👉 Preencha assim:<br>
+    &nbsp;&nbsp;&nbsp;• <strong>Repository name:</strong> flash-team<br>
+    &nbsp;&nbsp;&nbsp;• Marque a opção <strong>"Public"</strong><br>
+    👉 Clique em <strong>"Create repository"</strong></p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">8</div>
+    <h3>Fazer o upload dos arquivos</h3>
+    <p>👉 Na página do repositório, clique em <strong>"uploading an existing file"</strong><br>
+    👉 Arraste os arquivos para a área indicada:<br>
+    &nbsp;&nbsp;&nbsp;📄 <strong>flash-team.html</strong><br>
+    &nbsp;&nbsp;&nbsp;📄 <strong>flash-team-qrcode-impressao.html</strong><br>
+    &nbsp;&nbsp;&nbsp;📄 <strong>flash-team-guia-passo-a-passo.html</strong><br>
+    👉 Clique no botão verde <strong>"Commit changes"</strong></p>
+    <div class="dica">💡 Esses arquivos estão na pasta Downloads do seu computador — são os que você baixou do sistema.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FASE 4 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">4</div>
+    <div>
+      <div class="fase-titulo">Publicar na internet</div>
+      <div class="fase-sub">No Vercel — seu link fica pronto em minutos</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">9</div>
+    <h3>Importar o projeto no Vercel</h3>
+    <p>👉 Acesse <a href="https://vercel.com" target="_blank">vercel.com</a> e faça login<br>
+    👉 Clique em <strong>"Add New…"</strong> → <strong>"Project"</strong><br>
+    👉 Vai aparecer seu repositório <strong>flash-team</strong> na lista<br>
+    👉 Clique em <strong>"Import"</strong><br>
+    👉 Não mude nada nas configurações<br>
+    👉 Clique em <strong>"Deploy"</strong></p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">10</div>
+    <h3>Seu sistema está no ar! 🎉</h3>
+    <p>Após alguns segundos, o Vercel mostra uma tela de parabéns.<br><br>
+    Seu link vai ser algo como:<br>
+    <strong style="color:var(--gold);font-size:15px">flash-team.vercel.app</strong><br><br>
+    👉 Clique em <strong>"Continue to Dashboard"</strong><br>
+    👉 Você vê e copia seu link no topo da página<br>
+    👉 Compartilhe esse link com os alunos — funciona em qualquer celular!</p>
+    <div class="ok">✅ Pronto. O sistema está no ar, grátis, funcionando 24 horas por dia.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FASE 5 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">5</div>
+    <div>
+      <div class="fase-titulo">Imprimir o QR Code</div>
+      <div class="fase-sub">Para colar na parede da academia</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">11</div>
+    <h3>Abrir e imprimir o cartaz</h3>
+    <p>👉 No computador, abra o arquivo <strong>flash-team-qrcode-impressao.html</strong> no navegador<br>
+    👉 Clique no botão dourado <strong>"🖨️ Imprimir QR Code"</strong><br>
+    👉 Imprima em tamanho <strong>A4</strong><br>
+    👉 Dica: plastifique para durar mais<br>
+    👉 Cole em um lugar visível na academia — entrada, tatame ou vestiário</p>
+    <div class="alerta">⚠️ O QR Code só funciona quando o aluno acessa pelo link do Vercel. Não funciona abrindo o arquivo direto do computador.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- FASE 6 -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num">6</div>
+    <div>
+      <div class="fase-titulo">Usar no dia a dia</div>
+      <div class="fase-sub">Admin e alunos — como funciona na prática</div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">12</div>
+    <h3>Seu primeiro acesso como admin</h3>
+    <p>👉 Abra o link no celular<br>
+    👉 Email: <strong>pedro@flashteam.com</strong><br>
+    👉 Você terá acesso ao painel completo com dashboard, alunos, financeiro e presenças</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">13</div>
+    <h3>Cadastrar um aluno novo</h3>
+    <p>👉 Na aba <strong>Alunos</strong> → clique em <strong>"+ Novo"</strong><br>
+    👉 Toque no avatar para tirar uma foto do aluno na hora com a câmera<br>
+    👉 Preencha: nome, email, telefone, faixa e plano<br>
+    👉 Se for menor de idade, ative o botão e preencha os dados do responsável<br>
+    👉 Clique em <strong>Salvar</strong></p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">14</div>
+    <h3>Aluno registra presença pelo QR Code</h3>
+    <p>👉 Aluno abre o link no celular e faz login<br>
+    👉 Vai na aba <strong>Presença</strong><br>
+    👉 Clica em <strong>"📷 Abrir Câmera"</strong><br>
+    👉 Aponta para o QR Code na parede<br>
+    👉 Presença registrada automaticamente — só 1 por dia</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">15</div>
+    <h3>Cobrar aluno pelo WhatsApp</h3>
+    <p>👉 Na aba <strong>Financeiro</strong>, veja quem está pendente<br>
+    👉 Clique em <strong>"💬 Cobrar"</strong><br>
+    👉 Abre o WhatsApp com mensagem pronta — só clicar em enviar</p>
+  </div>
+
+  <div class="step">
+    <div class="step-num">16</div>
+    <h3>Marcar pagamento como pago</h3>
+    <p>👉 Na aba <strong>Financeiro</strong>, clique no <strong>✓</strong> ao lado do aluno<br>
+    👉 O status muda para <strong>Pago</strong> na hora<br>
+    👉 O dashboard e os totais atualizam automaticamente</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- DÚVIDAS -->
+<div class="fase">
+  <div class="fase-header">
+    <div class="fase-num" style="background:linear-gradient(135deg,#444,#333);color:#ccc">?</div>
+    <div>
+      <div class="fase-titulo">Dúvidas comuns</div>
+    </div>
+  </div>
+
+  <div class="step step-q">
+    <div class="step-num" style="background:linear-gradient(135deg,#444,#333);color:#ccc">?</div>
+    <h3>O link fica no ar para sempre?</h3>
+    <p>Sim. O Vercel mantém seu sistema no ar indefinidamente no plano gratuito, enquanto sua conta estiver ativa.</p>
+  </div>
+
+  <div class="step step-q">
+    <div class="step-num" style="background:linear-gradient(135deg,#444,#333);color:#ccc">?</div>
+    <h3>Os dados dos alunos ficam seguros?</h3>
+    <p>Sim. O Supabase usa os mesmos padrões de segurança de grandes bancos digitais. Seus dados ficam em servidores em São Paulo.</p>
+  </div>
+
+  <div class="step step-q">
+    <div class="step-num" style="background:linear-gradient(135deg,#444,#333);color:#ccc">?</div>
+    <h3>Tem limite de alunos no plano grátis?</h3>
+    <p>O Supabase gratuito suporta até <strong>50.000 registros</strong> e <strong>500 MB</strong> de dados. Para uma academia isso praticamente nunca acaba.</p>
+  </div>
+
+  <div class="step step-q">
+    <div class="step-num" style="background:linear-gradient(135deg,#444,#333);color:#ccc">?</div>
+    <h3>Os alunos precisam instalar algum app?</h3>
+    <p>Não. Basta abrir o link no navegador do celular. Mas eles podem salvar o link na tela inicial — vai parecer um aplicativo de verdade.</p>
+  </div>
+</div>
+
+<div class="resumo">
+  <h2>🥋 SISTEMA NO AR!</h2>
+  <p>
+    Custo total: <strong style="color:var(--green)">R$0,00 por mês</strong><br><br>
+    GitHub + Supabase + Vercel =<br>
+    sistema profissional, seguro e gratuito.<br><br>
+    Se travar em algum passo, releia com calma.<br>
+    Cada instrução foi feita para funcionar.<br><br>
+    <strong style="color:var(--gold)">Flash Team — Profissional. Rápido. Sem complicação.</strong>
+  </p>
+</div>
+
+</body>
+</html>

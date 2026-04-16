@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>QR Code Flash Team — Imprimir</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; font-family: 'Arial', sans-serif;
+  }
+  .cartaz {
+    width: 400px;
+    border: 6px solid #D4AF37;
+    border-radius: 24px;
+    padding: 32px 28px 28px;
+    text-align: center;
+    background: #0a0a0a;
+    color: #fff;
+    box-shadow: 0 0 40px rgba(212,175,55,0.3);
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+  .logo {
+    font-size: 42px; font-weight: 900;
+    letter-spacing: 6px;
+    color: #D4AF37;
+    margin-bottom: 4px;
+  }
+  .sub { font-size: 12px; letter-spacing: 3px; color: #888; text-transform: uppercase; margin-bottom: 24px; }
+  .qr-wrap {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    display: inline-block;
+    margin-bottom: 20px;
+    box-shadow: 0 0 24px rgba(212,175,55,0.2);
+  }
+  .instrucao {
+    font-size: 15px; color: #ccc; margin-bottom: 6px; line-height: 1.5;
+  }
+  .destaque {
+    font-size: 13px; color: #D4AF37;
+    background: rgba(212,175,55,0.1);
+    border: 1px solid rgba(212,175,55,0.3);
+    border-radius: 8px; padding: 8px 12px;
+    margin-top: 14px; font-weight: 600; letter-spacing: 1px;
+  }
+  .belt {
+    display: flex; justify-content: center; gap: 6px; margin-top: 20px;
+  }
+  .belt span { width: 32px; height: 5px; border-radius: 3px; }
+  @media print {
+    body { margin: 0; }
+    .no-print { display: none !important; }
+    .cartaz { box-shadow: none; border-color: #D4AF37; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cartaz">
+  <div class="logo">FLASH TEAM</div>
+  <div class="sub">Academia de Jiu-Jitsu</div>
+
+  <div class="qr-wrap">
+    <div id="qr-code"></div>
+  </div>
+
+  <div class="instrucao">
+    📱 Abra o app Flash Team<br>
+    vá em <strong style="color:#D4AF37">Presença</strong> e escaneie este QR Code
+  </div>
+  <div class="destaque">⚡ Registre sua aula diariamente</div>
+  <div class="belt">
+    <span style="background:#fff"></span>
+    <span style="background:#3B82F6"></span>
+    <span style="background:#7E22CE"></span>
+    <span style="background:#92400e"></span>
+    <span style="background:#222;border:1px solid #555"></span>
+  </div>
+</div>
+
+<div class="no-print" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%)">
+  <button onclick="window.print()" style="
+    background:#D4AF37;color:#000;border:none;padding:14px 32px;
+    font-size:15px;font-weight:700;border-radius:12px;cursor:pointer;
+    letter-spacing:1px;box-shadow:0 4px 16px rgba(212,175,55,0.4)">
+    🖨️ IMPRIMIR QR CODE
+  </button>
+</div>
+
+<!-- Biblioteca QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  new QRCode(document.getElementById('qr-code'), {
+    text: 'FLASHTEAM-PRESENCA-2024',
+    width: 260,
+    height: 260,
+    colorDark: '#000000',
+    colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.H
+  });
+</script>
+</body>
+</html>

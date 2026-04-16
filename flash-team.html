@@ -1,0 +1,1952 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flash Team — Jiu-Jitsu Academy</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #D4AF37;
+  --gold-light: #F0CD6A;
+  --gold-dark: #A8892A;
+  --gold-glow: rgba(212,175,55,0.3);
+  --black: #080808;
+  --black-2: #0F0F0F;
+  --black-3: #161616;
+  --black-4: #1E1E1E;
+  --black-5: #252525;
+  --gray: #3A3A3A;
+  --gray-2: #555;
+  --gray-3: #888;
+  --gray-4: #AAA;
+  --white: #F5F0E8;
+  --white-dim: rgba(245,240,232,0.7);
+  --red: #E53935;
+  --red-dim: rgba(229,57,53,0.15);
+  --green: #43A047;
+  --green-dim: rgba(67,160,71,0.15);
+  --blue: #1976D2;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-lg: 24px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --shadow-gold: 0 0 24px rgba(212,175,55,0.2);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Syne', sans-serif;
+  background: var(--black);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-size: 15px;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black-2); }
+::-webkit-scrollbar-thumb { background: var(--gold-dark); border-radius: 4px; }
+
+/* ── GRAIN OVERLAY ── */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999; opacity:.4;
+}
+
+/* ── SCREENS ── */
+.screen { display:none; min-height:100vh; flex-direction:column; }
+.screen.active { display:flex; }
+
+/* ── LOGIN ── */
+#screen-login {
+  align-items:center; justify-content:center;
+  background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.08) 0%, transparent 70%), var(--black);
+  padding: 24px;
+}
+.login-logo {
+  text-align:center; margin-bottom:48px;
+  animation: fadeDown 0.6s ease both;
+}
+.login-logo .brand {
+  font-family:'Bebas Neue',sans-serif;
+  font-size: 56px; letter-spacing:6px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold), var(--gold-dark));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  line-height:1;
+}
+.login-logo .sub {
+  font-size:11px; letter-spacing:4px; color:var(--gray-3); text-transform:uppercase; margin-top:4px;
+}
+.belt-bar {
+  display:flex; gap:4px; justify-content:center; margin-top:12px;
+}
+.belt-bar span {
+  width:28px; height:4px; border-radius:2px;
+}
+.belt-bar .b1{background:#fff}
+.belt-bar .b2{background:#3B82F6}
+.belt-bar .b3{background:#7E22CE}
+.belt-bar .b4{background:#92400e}
+.belt-bar .b5{background:#1a1a1a;border:1px solid #555}
+
+.login-card {
+  width:100%; max-width:400px;
+  background: var(--black-3);
+  border: 1px solid rgba(212,175,55,0.15);
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  box-shadow: var(--shadow), var(--shadow-gold);
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+.login-card h2 {
+  font-size:22px; font-weight:700; margin-bottom:6px; color:var(--white);
+}
+.login-card p { font-size:13px; color:var(--gray-3); margin-bottom:28px; }
+
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:11px; letter-spacing:1.5px; color:var(--gold); text-transform:uppercase; margin-bottom:8px; font-weight:600; }
+.field input, .field select, .field textarea {
+  width:100%; padding:14px 16px;
+  background: var(--black-4); border: 1px solid var(--gray);
+  border-radius: var(--radius-sm); color:var(--white);
+  font-family:'Syne',sans-serif; font-size:15px;
+  outline:none; transition: border-color 0.2s, box-shadow 0.2s;
+  appearance: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color:var(--gold); box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.field textarea { resize:vertical; min-height:80px; }
+.field select option { background:var(--black-4); }
+
+.btn {
+  width:100%; padding:16px; border:none; border-radius:var(--radius-sm);
+  font-family:'Syne',sans-serif; font-size:15px; font-weight:700;
+  letter-spacing:1px; cursor:pointer; transition: all 0.2s;
+  position:relative; overflow:hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color: var(--black);
+}
+.btn-primary:hover { transform:translateY(-1px); box-shadow: 0 6px 20px rgba(212,175,55,0.4); }
+.btn-primary:active { transform:translateY(0); }
+.btn-ghost {
+  background: transparent; color:var(--gold);
+  border: 1px solid rgba(212,175,55,0.3);
+}
+.btn-ghost:hover { background: rgba(212,175,55,0.08); }
+.btn-danger {
+  background: var(--red-dim); color:var(--red);
+  border: 1px solid rgba(229,57,53,0.3);
+}
+.btn-danger:hover { background: rgba(229,57,53,0.25); }
+.btn-success {
+  background: var(--green-dim); color:var(--green);
+  border: 1px solid rgba(67,160,71,0.3);
+}
+.btn-sm { padding:10px 16px; font-size:13px; width:auto; border-radius:8px; }
+.btn-icon { width:40px; height:40px; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; }
+.demo-links { display:flex; gap:10px; margin-top:16px; }
+.demo-links .btn { flex:1; }
+
+/* ── APP SHELL ── */
+#screen-app {
+  background: var(--black);
+  padding-bottom: 80px;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+  position:sticky; top:0; z-index:100;
+  background: rgba(8,8,8,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(212,175,55,0.1);
+  padding: 16px 20px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.topbar-brand {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:28px; letter-spacing:3px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.avatar-sm {
+  width:36px; height:36px; border-radius:50%;
+  border:2px solid var(--gold); object-fit:cover;
+  background: var(--black-4); cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:700; color:var(--gold);
+  overflow:hidden;
+}
+.avatar-sm img { width:100%; height:100%; object-fit:cover; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:100;
+  background: rgba(8,8,8,0.97);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(212,175,55,0.1);
+  display:flex; padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+}
+.nav-item {
+  flex:1; display:flex; flex-direction:column; align-items:center;
+  gap:4px; padding:6px 0; cursor:pointer;
+  transition: all 0.2s; border:none; background:transparent; color:var(--gray-3);
+  font-family:'Syne',sans-serif;
+}
+.nav-item .nav-icon { font-size:22px; transition:transform 0.2s; }
+.nav-item .nav-label { font-size:9px; letter-spacing:1px; text-transform:uppercase; font-weight:600; }
+.nav-item.active { color:var(--gold); }
+.nav-item.active .nav-icon { transform:translateY(-2px); }
+
+/* ── CONTENT AREAS ── */
+.tab-content { display:none; padding:20px; animation: fadeIn 0.3s ease; }
+.tab-content.active { display:block; }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;
+}
+.section-title {
+  font-family:'Bebas Neue',sans-serif; font-size:28px; letter-spacing:2px;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.section-sub { font-size:12px; color:var(--gray-3); margin-top:2px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--black-3);
+  border: 1px solid rgba(212,175,55,0.1);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom:16px;
+  position:relative; overflow:hidden;
+}
+.card::before {
+  content:'';
+  position:absolute; top:0; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent);
+}
+
+/* ── STAT CARDS ── */
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+.stat-card {
+  background: var(--black-3); border:1px solid rgba(212,175,55,0.1);
+  border-radius: var(--radius); padding:18px 16px;
+  position:relative; overflow:hidden;
+}
+.stat-card::after {
+  content:'';
+  position:absolute; bottom:-20px; right:-20px;
+  width:80px; height:80px; border-radius:50%;
+  background: radial-gradient(circle, rgba(212,175,55,0.06), transparent);
+}
+.stat-label { font-size:10px; letter-spacing:1.5px; color:var(--gray-3); text-transform:uppercase; font-weight:600; }
+.stat-value { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:1px; margin-top:4px; color:var(--gold-light); }
+.stat-value.green { color:var(--green); }
+.stat-value.red { color:var(--red); }
+.stat-value.white { color:var(--white); }
+.stat-detail { font-size:11px; color:var(--gray-3); margin-top:4px; }
+
+/* ── ALUNO CARD ── */
+.aluno-card {
+  background: var(--black-3); border:1px solid rgba(212,175,55,0.1);
+  border-radius: var(--radius); padding:16px;
+  margin-bottom:12px; cursor:pointer;
+  transition: border-color 0.2s, transform 0.15s;
+}
+.aluno-card:hover { border-color:rgba(212,175,55,0.3); transform:translateY(-1px); }
+.aluno-row { display:flex; align-items:center; gap:14px; }
+.aluno-avatar {
+  width:52px; height:52px; border-radius:50%;
+  border:2px solid var(--gold-dark); object-fit:cover;
+  background: var(--black-4); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:700; color:var(--gold);
+  overflow:hidden;
+}
+.aluno-avatar img { width:100%; height:100%; object-fit:cover; }
+.aluno-info { flex:1; min-width:0; }
+.aluno-name { font-size:16px; font-weight:700; color:var(--white); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.aluno-meta { display:flex; align-items:center; gap:8px; margin-top:4px; flex-wrap:wrap; }
+.badge {
+  display:inline-flex; align-items:center;
+  padding:3px 8px; border-radius:6px; font-size:10px; font-weight:700;
+  letter-spacing:0.5px; text-transform:uppercase;
+}
+.badge-faixa { background:rgba(212,175,55,0.15); color:var(--gold); }
+.badge-pago { background:var(--green-dim); color:var(--green); }
+.badge-pendente { background:var(--red-dim); color:var(--red); }
+.badge-bolsista { background:rgba(25,118,210,0.15); color:#64B5F6; }
+.badge-social { background:rgba(156,39,176,0.15); color:#CE93D8; }
+.aluno-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+/* ── PAGAMENTO LIST ── */
+.pag-item {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 16px; background:var(--black-4);
+  border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-sm);
+  margin-bottom:8px;
+}
+.pag-info { flex:1; }
+.pag-nome { font-size:14px; font-weight:600; color:var(--white); }
+.pag-mes { font-size:12px; color:var(--gray-3); margin-top:2px; }
+.pag-valor { font-family:'JetBrains Mono',monospace; font-size:16px; color:var(--gold); font-weight:500; margin-right:12px; }
+
+/* ── PERFIL ALUNO ── */
+.perfil-hero {
+  text-align:center; padding:32px 20px 24px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.06) 0%, transparent 70%);
+  border-bottom:1px solid rgba(212,175,55,0.1);
+}
+.perfil-avatar {
+  width:100px; height:100px; border-radius:50%;
+  border:3px solid var(--gold); margin:0 auto 16px;
+  background: var(--black-4); position:relative;
+  display:flex; align-items:center; justify-content:center;
+  font-size:36px; font-weight:700; color:var(--gold);
+  overflow:hidden; cursor:pointer;
+}
+.perfil-avatar img { width:100%; height:100%; object-fit:cover; }
+.perfil-avatar .photo-edit {
+  position:absolute; bottom:0; right:0;
+  width:28px; height:28px; background:var(--gold);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:12px; color:var(--black);
+}
+.perfil-nome { font-family:'Bebas Neue',sans-serif; font-size:32px; letter-spacing:2px; color:var(--white); }
+.perfil-faixa { font-size:13px; color:var(--gold); letter-spacing:2px; text-transform:uppercase; margin-top:4px; }
+
+/* ── QR CODE ── */
+.qr-container {
+  display:flex; flex-direction:column; align-items:center;
+  gap:20px; padding:24px 0;
+}
+.qr-box {
+  width:200px; height:200px;
+  background: var(--white); border-radius:16px;
+  padding:12px;
+  box-shadow: 0 0 40px rgba(212,175,55,0.3);
+  display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden;
+}
+.qr-box::after {
+  content:'';
+  position:absolute; inset:0;
+  background: linear-gradient(transparent 30%, rgba(212,175,55,0.1) 50%, transparent 70%);
+  animation: scanline 2s linear infinite;
+}
+@keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(200%)} }
+.qr-svg { width:100%; }
+.scan-btn {
+  background: linear-gradient(135deg, var(--gold-light), var(--gold));
+  color:var(--black); border:none; border-radius:16px;
+  padding:18px 40px; font-family:'Syne',sans-serif;
+  font-size:16px; font-weight:800; cursor:pointer;
+  letter-spacing:1px;
+  box-shadow: 0 8px 24px rgba(212,175,55,0.4);
+  transition: all 0.2s;
+  width:100%;
+}
+.scan-btn:hover { transform:translateY(-2px); box-shadow: 0 12px 28px rgba(212,175,55,0.5); }
+
+/* ── PRESENÇA HISTORY ── */
+.presenca-item {
+  display:flex; align-items:center; gap:14px;
+  padding:14px; background:var(--black-4);
+  border:1px solid rgba(255,255,255,0.05); border-radius:var(--radius-sm);
+  margin-bottom:8px;
+}
+.presenca-dot {
+  width:10px; height:10px; border-radius:50%;
+  background:var(--green); flex-shrink:0;
+  box-shadow:0 0 8px rgba(67,160,71,0.5);
+}
+.presenca-data { font-size:14px; font-weight:600; color:var(--white); }
+.presenca-dia { font-size:12px; color:var(--gray-3); }
+
+/* ── PIX CARD ── */
+.pix-card {
+  background: linear-gradient(135deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03));
+  border:1px solid rgba(212,175,55,0.25);
+  border-radius:var(--radius); padding:24px; text-align:center;
+  margin-bottom:16px;
+}
+.pix-icon { font-size:40px; margin-bottom:12px; }
+.pix-key {
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px; color:var(--gold); font-weight:500;
+  background:var(--black-4); padding:12px 16px;
+  border-radius:10px; margin:12px 0;
+  border:1px solid rgba(212,175,55,0.2);
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  position:fixed; inset:0; z-index:1000;
+  background:rgba(0,0,0,0.85); backdrop-filter:blur(8px);
+  display:none; align-items:flex-end; justify-content:center;
+  padding:0;
+}
+.modal-overlay.open { display:flex; animation: fadeIn 0.2s ease; }
+.modal {
+  background:var(--black-3); width:100%; max-width:500px;
+  border-radius:24px 24px 0 0;
+  border:1px solid rgba(212,175,55,0.15);
+  border-bottom:none;
+  max-height:90vh; overflow-y:auto;
+  animation: slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+.modal-full {
+  border-radius:24px; margin:20px; max-height:calc(100vh - 40px);
+}
+.modal-handle {
+  width:40px; height:4px; background:var(--gray-2);
+  border-radius:2px; margin:12px auto 0;
+}
+.modal-header {
+  padding:20px 24px 0;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.modal-title { font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:2px; color:var(--gold-light); }
+.modal-close {
+  width:32px; height:32px; border-radius:50%;
+  background:var(--black-4); border:1px solid var(--gray);
+  color:var(--gray-3); cursor:pointer; font-size:18px;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-body { padding:24px; }
+
+/* ── SEARCH ── */
+.search-box {
+  display:flex; align-items:center; gap:10px;
+  background:var(--black-4); border:1px solid var(--gray);
+  border-radius:var(--radius-sm); padding:12px 16px;
+  margin-bottom:16px; transition:border-color 0.2s;
+}
+.search-box:focus-within { border-color:var(--gold); }
+.search-box input {
+  flex:1; background:transparent; border:none; outline:none;
+  color:var(--white); font-family:'Syne',sans-serif; font-size:15px;
+}
+.search-icon { color:var(--gray-3); font-size:16px; }
+
+/* ── FILTER TABS ── */
+.filter-tabs { display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; padding-bottom:4px; }
+.filter-tabs::-webkit-scrollbar { height:0; }
+.filter-tab {
+  padding:8px 16px; border-radius:20px; font-size:12px; font-weight:700;
+  letter-spacing:0.5px; white-space:nowrap; cursor:pointer; border:none;
+  font-family:'Syne',sans-serif; transition:all 0.2s;
+  background:var(--black-4); color:var(--gray-3);
+}
+.filter-tab.active { background:var(--gold); color:var(--black); }
+
+/* ── MES PICKER ── */
+.mes-picker {
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--black-4); border:1px solid rgba(212,175,55,0.15);
+  border-radius:var(--radius-sm); padding:12px 16px; margin-bottom:20px;
+}
+.mes-nav { background:transparent; border:none; color:var(--gold); font-size:20px; cursor:pointer; padding:0 8px; }
+.mes-label { font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:2px; color:var(--white); }
+
+/* ── TOAST ── */
+.toast {
+  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--black-4); border:1px solid rgba(212,175,55,0.3);
+  color:var(--white); padding:14px 24px; border-radius:50px;
+  font-size:14px; font-weight:600; z-index:9998;
+  opacity:0; transition:all 0.3s; white-space:nowrap;
+  max-width:calc(100vw - 40px);
+}
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.toast.success { border-color:var(--green); }
+.toast.error { border-color:var(--red); }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align:center; padding:48px 24px; color:var(--gray-3);
+}
+.empty-icon { font-size:48px; margin-bottom:12px; }
+.empty h3 { font-size:18px; color:var(--gray-4); margin-bottom:6px; }
+.empty p { font-size:14px; }
+
+/* ── DIVIDER ── */
+.divider { height:1px; background:rgba(255,255,255,0.06); margin:16px 0; }
+
+/* ── SWITCH ── */
+.switch-row { display:flex; align-items:center; justify-content:space-between; padding:4px 0; }
+.switch-label { font-size:14px; color:var(--white); }
+.switch-desc { font-size:12px; color:var(--gray-3); }
+.switch {
+  position:relative; width:48px; height:26px;
+  background:var(--gray); border-radius:13px;
+  cursor:pointer; transition:background 0.2s; flex-shrink:0;
+  border:none;
+}
+.switch.on { background:var(--gold); }
+.switch::after {
+  content:''; position:absolute;
+  width:20px; height:20px; background:var(--white);
+  border-radius:50%; top:3px; left:3px;
+  transition:transform 0.2s;
+}
+.switch.on::after { transform:translateX(22px); }
+
+/* ── WELCOME CARD ── */
+.welcome-card {
+  background: linear-gradient(135deg, rgba(212,175,55,0.12), rgba(212,175,55,0.04));
+  border:1px solid rgba(212,175,55,0.2);
+  border-radius:var(--radius); padding:20px;
+  margin-bottom:20px;
+  position:relative; overflow:hidden;
+}
+.welcome-card::before {
+  content:''; position:absolute;
+  top:-40px; right:-40px; width:140px; height:140px;
+  background:radial-gradient(circle, rgba(212,175,55,0.1), transparent);
+  border-radius:50%;
+}
+.welcome-name { font-family:'Bebas Neue',sans-serif; font-size:30px; letter-spacing:2px; color:var(--gold-light); }
+.welcome-sub { font-size:13px; color:var(--gray-3); margin-top:4px; }
+
+/* ── PRESENCA SCAN RESULT ── */
+.scan-result {
+  padding:24px; text-align:center;
+  border-radius:var(--radius); margin-top:16px;
+}
+.scan-result.success { background:var(--green-dim); border:1px solid rgba(67,160,71,0.3); }
+.scan-result.error { background:var(--red-dim); border:1px solid rgba(229,57,53,0.3); }
+.scan-result-icon { font-size:48px; margin-bottom:12px; }
+.scan-result-text { font-size:18px; font-weight:700; }
+.scan-result-sub { font-size:13px; color:var(--gray-3); margin-top:6px; }
+
+/* ── PROGRESS BAR ── */
+.prog-bar { background:var(--black-5); border-radius:4px; height:6px; overflow:hidden; margin-top:8px; }
+.prog-fill { height:100%; border-radius:4px; background:linear-gradient(90deg, var(--gold-dark), var(--gold)); transition:width 0.5s ease; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(212,175,55,0.4)} 50%{box-shadow:0 0 0 12px rgba(212,175,55,0)} }
+@keyframes scanH { 0%{top:0%} 50%{top:calc(100% - 2px)} 100%{top:0%} }
+
+.pulse { animation:pulse 2s infinite; }
+
+/* ── RESPONSIVE ── */
+@media(min-width:500px) {
+  .stats-grid { grid-template-columns:repeat(3,1fr); }
+}
+@media(min-width:768px) {
+  #screen-app { max-width:500px; margin:0 auto; }
+  .bottom-nav, .topbar { max-width:500px; left:50%; transform:translateX(-50%); right:auto; width:100%; }
+  .modal { max-width:460px; }
+}
+
+/* ── MISC ── */
+.text-gold { color:var(--gold); }
+.text-gray { color:var(--gray-3); }
+.text-sm { font-size:12px; }
+.mt-4 { margin-top:4px; }
+.mt-8 { margin-top:8px; }
+.mt-12 { margin-top:12px; }
+.mt-16 { margin-top:16px; }
+.flex { display:flex; }
+.flex-center { display:flex; align-items:center; justify-content:center; }
+.gap-8 { gap:8px; }
+.gap-12 { gap:12px; }
+.fw-7 { font-weight:700; }
+.mono { font-family:'JetBrains Mono',monospace; }
+.row-btns { display:flex; gap:8px; }
+.row-btns .btn { flex:1; }
+hr.gold { border:none; height:1px; background:linear-gradient(90deg, transparent, rgba(212,175,55,0.3), transparent); margin:20px 0; }
+
+/* ── PHOTO INPUT ── */
+#photo-input { display:none; }
+
+/* ── NOTIFICATION DOT ── */
+.notif-dot {
+  width:8px; height:8px; background:var(--red); border-radius:50%;
+  position:absolute; top:6px; right:50%; transform:translateX(200%);
+}
+
+/* ── SCROLL AREA ── */
+.scroll-x { overflow-x:auto; }
+.scroll-x::-webkit-scrollbar { height:0; }
+</style>
+</head>
+<body>
+
+<!-- ── SCREEN: LOGIN ── -->
+<div id="screen-login" class="screen active">
+  <div class="login-logo">
+    <div class="brand">FLASH TEAM</div>
+    <div class="sub">Academia de Jiu-Jitsu</div>
+    <div class="belt-bar">
+      <span class="b1"></span><span class="b2"></span>
+      <span class="b3"></span><span class="b4"></span><span class="b5"></span>
+    </div>
+  </div>
+  <div class="login-card">
+    <h2>Entrar</h2>
+    <p>Acesse sua conta para continuar</p>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">ENTRAR</button>
+    <div class="demo-links" style="margin-top:16px">
+      <button class="btn btn-ghost btn-sm" onclick="demoLogin('admin')">👑 Demo Admin</button>
+      <button class="btn btn-ghost btn-sm" onclick="demoLogin('aluno')">🥋 Demo Aluno</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── SCREEN: APP ── -->
+<div id="screen-app" class="screen">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <span class="topbar-brand">FLASH</span>
+    <div class="topbar-right">
+      <div id="topbar-avatar" class="avatar-sm" onclick="goTab('perfil')">P</div>
+    </div>
+  </div>
+
+  <!-- ── TAB: DASHBOARD (admin) ── -->
+  <div id="tab-dashboard" class="tab-content active">
+    <div class="welcome-card">
+      <div class="welcome-name">Bem-vindo, Pedro Moura</div>
+      <div class="welcome-sub">Painel administrativo — Flash Team</div>
+    </div>
+    <div id="dash-stats" class="stats-grid"></div>
+    <div class="section-header">
+      <div><div class="section-title">Inadimplentes</div><div class="section-sub">Mês atual</div></div>
+    </div>
+    <div id="dash-inadimplentes"></div>
+  </div>
+
+  <!-- ── TAB: ALUNOS (admin) ── -->
+  <div id="tab-alunos" class="tab-content">
+    <div class="section-header">
+      <div><div class="section-title">Alunos</div><div class="section-sub" id="alunos-count"></div></div>
+      <button class="btn btn-primary btn-sm" onclick="openModalCadastro()">+ Novo</button>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Buscar aluno..." oninput="filterAlunos(this.value)" id="search-alunos">
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilterAluno('todos',this)">Todos</button>
+      <button class="filter-tab" onclick="setFilterAluno('pendente',this)">Pendentes</button>
+      <button class="filter-tab" onclick="setFilterAluno('pago',this)">Em dia</button>
+      <button class="filter-tab" onclick="setFilterAluno('bolsista',this)">Bolsistas</button>
+    </div>
+    <div id="alunos-list"></div>
+  </div>
+
+  <!-- ── TAB: FINANCEIRO (admin) ── -->
+  <div id="tab-financeiro" class="tab-content">
+    <div class="section-header">
+      <div><div class="section-title">Financeiro</div></div>
+    </div>
+    <div class="mes-picker">
+      <button class="mes-nav" onclick="changeMes(-1)">‹</button>
+      <span class="mes-label" id="mes-label-fin">—</span>
+      <button class="mes-nav" onclick="changeMes(1)">›</button>
+    </div>
+    <div class="stats-grid" id="fin-stats"></div>
+    <div class="filter-tabs">
+      <button class="filter-tab active" onclick="setFilterPag('todos',this)">Todos</button>
+      <button class="filter-tab" onclick="setFilterPag('pendente',this)">Pendentes</button>
+      <button class="filter-tab" onclick="setFilterPag('pago',this)">Pagos</button>
+    </div>
+    <div id="pagamentos-list"></div>
+  </div>
+
+  <!-- ── TAB: PERFIL (aluno) ── -->
+  <div id="tab-perfil" class="tab-content">
+    <div class="perfil-hero">
+      <div class="perfil-avatar" id="perfil-avatar-el" onclick="openPhotoEdit()">
+        <span id="perfil-avatar-initials">?</span>
+        <div class="photo-edit">📷</div>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" onchange="handlePhotoChange(event)">
+      <div class="perfil-nome" id="perfil-nome-el">—</div>
+      <div class="perfil-faixa" id="perfil-faixa-el">—</div>
+    </div>
+    <div style="padding:20px">
+      <div class="card">
+        <div class="section-title" style="font-size:20px;margin-bottom:16px">Meus Dados</div>
+        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
+          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Email</span>
+          <span id="perfil-email-el" style="font-size:14px">—</span>
+        </div>
+        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px;margin-bottom:12px">
+          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Telefone</span>
+          <span id="perfil-tel-el" style="font-size:14px">—</span>
+        </div>
+        <div class="switch-row" style="flex-direction:column;align-items:flex-start;gap:4px">
+          <span class="text-sm text-gold" style="letter-spacing:1px;text-transform:uppercase;font-size:10px">Plano</span>
+          <span id="perfil-plano-el" style="font-size:14px">—</span>
+        </div>
+      </div>
+      <div id="pix-area" class="pix-card">
+        <div class="pix-icon">💰</div>
+        <div style="font-size:14px;color:var(--gray-3)">Chave PIX para pagamento</div>
+        <div class="pix-key">06356911166</div>
+        <button class="btn btn-primary" onclick="copiarPix()">📋 COPIAR CHAVE PIX</button>
+      </div>
+      <button class="btn btn-ghost" onclick="abrirContato()" style="margin-bottom:12px">
+        💬 FALAR COM PROFESSOR
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="doLogout()" style="margin-top:8px">Sair</button>
+    </div>
+  </div>
+
+  <!-- ── TAB: PRESENÇA ── -->
+  <div id="tab-presenca" class="tab-content">
+    <div style="padding:20px">
+      <div class="section-header">
+        <div><div class="section-title">Presença</div><div class="section-sub">Aponte a câmera para o QR Code</div></div>
+      </div>
+
+      <!-- ESTADO: idle -->
+      <div id="pres-idle">
+        <div class="card" style="text-align:center;padding:32px 20px">
+          <div style="font-size:52px;margin-bottom:12px">📷</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--white)">Escanear QR Code</div>
+          <div style="font-size:13px;color:var(--gray-3);margin-bottom:24px">Aponte a câmera para o QR Code fixado na parede da academia</div>
+          <button class="scan-btn pulse" onclick="abrirScanner()">📷 ABRIR CÂMERA</button>
+        </div>
+      </div>
+
+      <!-- ESTADO: câmera aberta -->
+      <div id="pres-scanner" style="display:none">
+        <div style="position:relative;border-radius:var(--radius);overflow:hidden;background:#000;aspect-ratio:1;max-width:360px;margin:0 auto;box-shadow:0 0 32px rgba(212,175,55,0.25)">
+          <video id="qr-video" style="width:100%;height:100%;object-fit:cover;display:block" playsinline autoplay muted></video>
+          <canvas id="qr-canvas" style="display:none"></canvas>
+          <!-- mira animada -->
+          <div style="position:absolute;inset:0;pointer-events:none">
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;height:60%;border:2px solid var(--gold);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,0.45)">
+              <!-- cantos -->
+              <div style="position:absolute;top:-2px;left:-2px;width:22px;height:22px;border-top:4px solid var(--gold-light);border-left:4px solid var(--gold-light);border-radius:4px 0 0 0"></div>
+              <div style="position:absolute;top:-2px;right:-2px;width:22px;height:22px;border-top:4px solid var(--gold-light);border-right:4px solid var(--gold-light);border-radius:0 4px 0 0"></div>
+              <div style="position:absolute;bottom:-2px;left:-2px;width:22px;height:22px;border-bottom:4px solid var(--gold-light);border-left:4px solid var(--gold-light);border-radius:0 0 0 4px"></div>
+              <div style="position:absolute;bottom:-2px;right:-2px;width:22px;height:22px;border-bottom:4px solid var(--gold-light);border-right:4px solid var(--gold-light);border-radius:0 0 4px 0"></div>
+              <!-- linha de scan -->
+              <div id="scan-line" style="position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:scanH 1.8s linear infinite"></div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:12px;font-size:13px;color:var(--gray-3)" id="scan-status-text">Procurando QR Code...</div>
+        <button class="btn btn-ghost" onclick="fecharScanner()" style="margin-top:16px">✕ Cancelar</button>
+      </div>
+
+      <!-- ESTADO: resultado -->
+      <div id="pres-resultado" style="display:none"></div>
+
+      <hr class="gold">
+      <div class="section-title" style="font-size:20px;margin-bottom:12px">Histórico</div>
+      <div id="presencas-list"></div>
+    </div>
+  </div>
+
+  <!-- ── TAB: PRESENÇA ADMIN ── -->
+  <div id="tab-presenca-admin" class="tab-content">
+    <div style="padding:20px">
+      <div class="section-header">
+        <div><div class="section-title">Presenças</div><div class="section-sub">Controle de frequência</div></div>
+      </div>
+      <div id="presencas-admin-list"></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+</div>
+
+<!-- ── MODAIS ── -->
+
+<!-- MODAL: Cadastrar/Editar Aluno -->
+<div class="modal-overlay" id="modal-aluno">
+  <div class="modal modal-full" style="border-radius:24px;margin:20px;max-height:calc(100vh - 40px)">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-aluno-title">NOVO ALUNO</span>
+      <button class="modal-close" onclick="closeModal('modal-aluno')">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- ── FOTO DO ALUNO ── -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:24px">
+        <div id="f-avatar-preview" onclick="abrirFotoModal()" style="
+          width:100px;height:100px;border-radius:50%;
+          background:#1E1E1E;border:3px solid var(--gold-dark);
+          display:flex;align-items:center;justify-content:center;
+          font-size:36px;cursor:pointer;position:relative;overflow:hidden;
+          box-shadow:0 0 20px rgba(212,175,55,0.2);transition:all 0.2s;
+        ">
+          <span id="f-avatar-icon">📷</span>
+        </div>
+        <div style="text-align:center">
+          <div style="font-size:13px;color:var(--gold);font-weight:600">Foto do Aluno</div>
+          <div style="font-size:11px;color:var(--gray-3);margin-top:2px">Toque para tirar foto ou escolher da galeria</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost btn-sm" onclick="triggerFotoInput('camera')">📷 Câmera</button>
+          <button class="btn btn-ghost btn-sm" onclick="triggerFotoInput('gallery')">🖼 Galeria</button>
+          <button class="btn btn-danger btn-sm" id="f-foto-remove" onclick="removerFotoCadastro()" style="display:none">✕</button>
+        </div>
+        <input type="file" id="f-foto-camera" accept="image/*" capture="environment" onchange="handleFotoCadastro(event)" style="display:none">
+        <input type="file" id="f-foto-gallery" accept="image/*" onchange="handleFotoCadastro(event)" style="display:none">
+        <input type="hidden" id="f-foto-url" value="">
+      </div>
+      <div class="divider"></div>
+
+      <div class="field"><label>Nome completo</label><input id="f-nome" type="text" placeholder="Nome do aluno" oninput="atualizarPreviewNome()"></div>
+      <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="email@exemplo.com"></div>
+      <div class="field"><label>Telefone</label><input id="f-tel" type="tel" placeholder="(11) 99999-9999"></div>
+      <div class="field">
+        <label>Faixa</label>
+        <select id="f-faixa">
+          <option value="Branca">⬜ Branca</option>
+          <option value="Cinza">🔘 Cinza</option>
+          <option value="Amarela">🟡 Amarela</option>
+          <option value="Laranja">🟠 Laranja</option>
+          <option value="Verde">🟢 Verde</option>
+          <option value="Azul">🔵 Azul</option>
+          <option value="Roxa">🟣 Roxa</option>
+          <option value="Marrom">🟤 Marrom</option>
+          <option value="Preta">⚫ Preta</option>
+          <option value="Vermelha">🔴 Vermelha</option>
+        </select>
+      </div>
+      <div class="field"><label>Plano</label>
+        <select id="f-plano" onchange="updateValorPlano()">
+          <option value="Mensal">Mensal</option>
+          <option value="Trimestral">Trimestral</option>
+          <option value="Semestral">Semestral</option>
+        </select>
+      </div>
+      <div class="field"><label>Valor do Plano (R$)</label><input id="f-valor" type="number" placeholder="150.00" step="0.01"></div>
+      <div class="divider"></div>
+      <div class="switch-row" style="margin-bottom:16px">
+        <div><div class="switch-label">Bolsista</div><div class="switch-desc text-sm">Isenção total — valor = R$0</div></div>
+        <button class="switch" id="sw-bolsista" onclick="toggleSwitch('sw-bolsista','f-bolsista')"></button>
+        <input type="hidden" id="f-bolsista" value="false">
+      </div>
+      <div class="switch-row" style="margin-bottom:16px">
+        <div><div class="switch-label">Projeto Social</div><div class="switch-desc text-sm">Valor personalizado</div></div>
+        <button class="switch" id="sw-social" onclick="toggleSwitch('sw-social','f-social')"></button>
+        <input type="hidden" id="f-social" value="false">
+      </div>
+      <div class="field" id="campo-valor-personalizado" style="display:none">
+        <label>Valor Personalizado (R$)</label>
+        <input id="f-valor-custom" type="number" placeholder="80.00" step="0.01">
+      </div>
+      <div class="divider"></div>
+      <div class="switch-row" style="margin-bottom:16px">
+        <div><div class="switch-label">Menor de idade</div><div class="switch-desc text-sm">Requer responsável</div></div>
+        <button class="switch" id="sw-menor" onclick="toggleSwitch('sw-menor','f-menor');toggleResponsavel()"></button>
+        <input type="hidden" id="f-menor" value="false">
+      </div>
+      <div id="campos-responsavel" style="display:none">
+        <div class="field"><label>Nome do Responsável</label><input id="f-resp-nome" type="text" placeholder="Nome completo"></div>
+        <div class="field"><label>Telefone do Responsável</label><input id="f-resp-tel" type="tel" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="row-btns" style="margin-top:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-aluno')">Cancelar</button>
+        <button class="btn btn-primary" onclick="salvarAluno()">SALVAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Detalhe Aluno (admin) -->
+<div class="modal-overlay" id="modal-aluno-detail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-header" style="margin-top:4px">
+      <span class="modal-title" id="detail-nome">—</span>
+      <button class="modal-close" onclick="closeModal('modal-aluno-detail')">✕</button>
+    </div>
+    <div class="modal-body" id="modal-detail-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar exclusão -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-body" style="text-align:center;padding:32px 24px">
+      <div style="font-size:48px;margin-bottom:16px">⚠️</div>
+      <div style="font-size:18px;font-weight:700;margin-bottom:8px">Excluir aluno?</div>
+      <div style="font-size:14px;color:var(--gray-3);margin-bottom:24px" id="confirm-msg">Esta ação não pode ser desfeita.</div>
+      <div class="row-btns">
+        <button class="btn btn-ghost" onclick="closeModal('modal-confirm')">Cancelar</button>
+        <button class="btn btn-danger" id="confirm-btn">EXCLUIR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════
+// ── STATE (Single Source of Truth)
+// ══════════════════════════════════════════════
+const STATE = {
+  currentUser: null,
+  mesFin: new Date().getMonth(), // 0-indexed
+  anoFin: new Date().getFullYear(),
+  filterAluno: 'todos',
+  filterPag: 'todos',
+  editingId: null,
+};
+
+// ── BANCO SIMULADO (backend in-memory) ──
+const DB = {
+  usuarios: [
+    {id:1,nome:'Pedro Moura',email:'pedro@flashteam.com',telefone:'11999990001',foto_url:'',tipo:'admin',faixa:'Preta',plano:'Mensal',valor_plano:0,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-01'},
+    {id:2,nome:'Carlos Silva',email:'carlos@aluno.com',telefone:'11999990002',foto_url:'',tipo:'aluno',faixa:'Azul',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-02-10'},
+    {id:3,nome:'Ana Beatriz',email:'ana@aluno.com',telefone:'11999990003',foto_url:'',tipo:'aluno',faixa:'Branca',plano:'Mensal',valor_plano:120,bolsista:true,projeto_social:false,valor_personalizado:0,responsavel_nome:'Márcia Lima',responsavel_telefone:'11999990033',created_at:'2024-03-15'},
+    {id:4,nome:'Rafael Costa',email:'rafael@aluno.com',telefone:'11999990004',foto_url:'',tipo:'aluno',faixa:'Roxa',plano:'Mensal',valor_plano:180,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-20'},
+    {id:5,nome:'Júlia Mendes',email:'julia@aluno.com',telefone:'11999990005',foto_url:'',tipo:'aluno',faixa:'Verde',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:true,valor_personalizado:80,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-04-05'},
+    {id:6,nome:'Thiago Oliveira',email:'thiago@aluno.com',telefone:'11999990006',foto_url:'',tipo:'aluno',faixa:'Marrom',plano:'Mensal',valor_plano:200,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-10'},
+  ],
+
+  // ÚNICA fonte de verdade para pagamentos
+  pagamentos: [
+    {id:1,user_id:2,mes_referencia:'2025-01',status:'pago',valor:150,data_pagamento:'2025-01-05',data_vencimento:'2025-01-10'},
+    {id:2,user_id:4,mes_referencia:'2025-01',status:'pago',valor:180,data_pagamento:'2025-01-07',data_vencimento:'2025-01-10'},
+    {id:3,user_id:5,mes_referencia:'2025-01',status:'pago',valor:80,data_pagamento:'2025-01-08',data_vencimento:'2025-01-10'},
+    {id:4,user_id:6,mes_referencia:'2025-01',status:'pago',valor:200,data_pagamento:'2025-01-09',data_vencimento:'2025-01-10'},
+    {id:5,user_id:2,mes_referencia:'2025-04',status:'pendente',valor:150,data_pagamento:null,data_vencimento:'2025-04-10'},
+    {id:6,user_id:4,mes_referencia:'2025-04',status:'pago',valor:180,data_pagamento:'2025-04-03',data_vencimento:'2025-04-10'},
+    {id:7,user_id:5,mes_referencia:'2025-04',status:'pendente',valor:80,data_pagamento:null,data_vencimento:'2025-04-10'},
+    {id:8,user_id:6,mes_referencia:'2025-04',status:'pago',valor:200,data_pagamento:'2025-04-02',data_vencimento:'2025-04-10'},
+    {id:9,user_id:2,mes_referencia:'2026-04',status:'pendente',valor:150,data_pagamento:null,data_vencimento:'2026-04-10'},
+    {id:10,user_id:4,mes_referencia:'2026-04',status:'pago',valor:180,data_pagamento:'2026-04-03',data_vencimento:'2026-04-10'},
+    {id:11,user_id:5,mes_referencia:'2026-04',status:'pendente',valor:80,data_pagamento:null,data_vencimento:'2026-04-10'},
+    {id:12,user_id:6,mes_referencia:'2026-04',status:'pago',valor:200,data_pagamento:'2026-04-02',data_vencimento:'2026-04-10'},
+  ],
+
+  presencas: [
+    {id:1,user_id:2,data:'2026-04-14'},
+    {id:2,user_id:2,data:'2026-04-12'},
+    {id:3,user_id:2,data:'2026-04-10'},
+    {id:4,user_id:2,data:'2026-04-08'},
+    {id:5,user_id:4,data:'2026-04-14'},
+    {id:6,user_id:4,data:'2026-04-13'},
+    {id:7,user_id:6,data:'2026-04-15'},
+  ],
+  _nextId: { usuarios:7, pagamentos:13, presencas:8 },
+};
+
+// ══════════════════════════════════════════════
+// ── BACKEND LOGIC (Single Source of Truth)
+// ══════════════════════════════════════════════
+
+// Calcula valor real do pagamento com base NO BACKEND
+function calcularValor(usuario) {
+  if (usuario.bolsista) return 0;
+  if (usuario.projeto_social) return usuario.valor_personalizado;
+  return usuario.valor_plano;
+}
+
+// Gera mês de referência string
+function mesRef(mes, ano) {
+  return `${ano}-${String(mes+1).padStart(2,'0')}`;
+}
+
+// Busca pagamento por user+mes (UNIQUE)
+function getPagamento(userId, mes, ano) {
+  const ref = mesRef(mes, ano);
+  return DB.pagamentos.find(p => p.user_id === userId && p.mes_referencia === ref) || null;
+}
+
+// Status de pagamento EXCLUSIVAMENTE da tabela pagamentos
+function getStatusPagamento(userId) {
+  const hoje = new Date();
+  const p = getPagamento(userId, hoje.getMonth(), hoje.getFullYear());
+  if (!p) return 'pendente';
+  return p.status;
+}
+
+// Marcar como pago (apenas UPDATE, nunca delete+insert)
+function marcarPago(pagId) {
+  const pag = DB.pagamentos.find(p => p.id === pagId);
+  if (!pag) return false;
+  pag.status = 'pago';
+  pag.data_pagamento = new Date().toISOString().split('T')[0];
+  return true;
+}
+
+// Garantir que todos alunos têm registro de pagamento para o mês atual
+function garantirPagamentos(mes, ano) {
+  const alunos = DB.usuarios.filter(u => u.tipo === 'aluno');
+  alunos.forEach(u => {
+    const existing = getPagamento(u.id, mes, ano);
+    if (!existing) {
+      const ref = mesRef(mes, ano);
+      const valor = calcularValor(u);
+      DB.pagamentos.push({
+        id: DB._nextId.pagamentos++,
+        user_id: u.id,
+        mes_referencia: ref,
+        status: 'pendente',
+        valor: valor,
+        data_pagamento: null,
+        data_vencimento: `${ano}-${String(mes+1).padStart(2,'0')}-10`,
+      });
+    }
+  });
+}
+
+// PATCH foto (rota separada — não altera pagamentos)
+function patchFoto(userId, fotoUrl) {
+  const u = DB.usuarios.find(u => u.id === userId);
+  if (!u) return false;
+  u.foto_url = fotoUrl;  // SOMENTE foto_url
+  return true;
+}
+
+// Registrar presença (UNIQUE user+data)
+function registrarPresencaDB(userId) {
+  const hoje = new Date().toISOString().split('T')[0];
+  const existing = DB.presencas.find(p => p.user_id === userId && p.data === hoje);
+  if (existing) return {ok:false, msg:'Presença já registrada hoje!'};
+  DB.presencas.push({id: DB._nextId.presencas++, user_id: userId, data: hoje});
+  return {ok:true, msg:'Presença registrada com sucesso!'};
+}
+
+// ══════════════════════════════════════════════
+// ── AUTH
+// ══════════════════════════════════════════════
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  const user = DB.usuarios.find(u => u.email === email);
+  if (!user) { showToast('Email não encontrado','error'); return; }
+  // Senha demo: qualquer coisa funciona
+  STATE.currentUser = user;
+  enterApp();
+}
+
+function demoLogin(tipo) {
+  STATE.currentUser = tipo === 'admin'
+    ? DB.usuarios.find(u => u.tipo === 'admin')
+    : DB.usuarios.find(u => u.tipo === 'aluno');
+  enterApp();
+}
+
+function doLogout() {
+  STATE.currentUser = null;
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('screen-app').classList.remove('active');
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-senha').value = '';
+}
+
+function enterApp() {
+  const u = STATE.currentUser;
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  const av = document.getElementById('topbar-avatar');
+  av.textContent = u.nome[0];
+  if (u.foto_url) {
+    av.innerHTML = `<img src="${u.foto_url}" onerror="this.parentNode.textContent='${u.nome[0]}'">`;
+  }
+  buildNav();
+  garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
+  goTab(u.tipo === 'admin' ? 'dashboard' : 'perfil');
+}
+
+// ══════════════════════════════════════════════
+// ── NAVIGATION
+// ══════════════════════════════════════════════
+function buildNav() {
+  const u = STATE.currentUser;
+  const isAdmin = u.tipo === 'admin';
+  const navItems = isAdmin
+    ? [
+        {id:'dashboard', icon:'📊', label:'Dashboard'},
+        {id:'alunos',    icon:'🥋', label:'Alunos'},
+        {id:'financeiro',icon:'💰', label:'Finanças'},
+        {id:'presenca-admin',icon:'📋', label:'Presenças'},
+      ]
+    : [
+        {id:'perfil',   icon:'👤', label:'Perfil'},
+        {id:'presenca', icon:'✅', label:'Presença'},
+      ];
+
+  const nav = document.getElementById('bottom-nav');
+  nav.innerHTML = navItems.map(n => `
+    <button class="nav-item" id="nav-${n.id}" onclick="goTab('${n.id}')">
+      <span class="nav-icon">${n.icon}</span>
+      <span class="nav-label">${n.label}</span>
+    </button>
+  `).join('');
+}
+
+function goTab(id) {
+  // Fecha câmera se sair da aba de presença
+  if (id !== 'presenca' && scannerStream) fecharScanner();
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const el = document.getElementById(`tab-${id}`);
+  if (el) el.classList.add('active');
+  const nav = document.getElementById(`nav-${id}`);
+  if (nav) nav.classList.add('active');
+  renderTab(id);
+}
+
+function renderTab(id) {
+  const u = STATE.currentUser;
+  if (!u) return;
+  if (id === 'dashboard') renderDashboard();
+  else if (id === 'alunos') renderAlunos();
+  else if (id === 'financeiro') renderFinanceiro();
+  else if (id === 'perfil') renderPerfil();
+  else if (id === 'presenca') renderPresenca();
+  else if (id === 'presenca-admin') renderPresencaAdmin();
+}
+
+// ══════════════════════════════════════════════
+// ── COR DE FAIXA
+// ══════════════════════════════════════════════
+const FAIXA_CORES = {
+  'Branca':   { bg: '#FFFFFF', text: '#111111', border: '#CCCCCC' },
+  'Cinza':    { bg: '#9E9E9E', text: '#FFFFFF', border: '#757575' },
+  'Amarela':  { bg: '#FDD835', text: '#111111', border: '#F9A825' },
+  'Laranja':  { bg: '#FB8C00', text: '#FFFFFF', border: '#E65100' },
+  'Verde':    { bg: '#43A047', text: '#FFFFFF', border: '#2E7D32' },
+  'Azul':     { bg: '#1E88E5', text: '#FFFFFF', border: '#1565C0' },
+  'Roxa':     { bg: '#8E24AA', text: '#FFFFFF', border: '#6A1B9A' },
+  'Marrom':   { bg: '#6D4C41', text: '#FFFFFF', border: '#4E342E' },
+  'Preta':    { bg: '#212121', text: '#D4AF37', border: '#D4AF37' },
+  'Vermelha': { bg: '#E53935', text: '#FFFFFF', border: '#B71C1C' },
+};
+
+function corFaixa(faixa) {
+  return FAIXA_CORES[faixa] || { bg: '#D4AF37', text: '#111', border: '#A8892A' };
+}
+
+// Gera HTML do avatar com cor de faixa (sem foto)
+function avatarHTML(usuario, size = 52, fontSize = 18) {
+  const c = corFaixa(usuario.faixa);
+  const initials = usuario.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+  const style = `
+    width:${size}px;height:${size}px;border-radius:50%;
+    background:${c.bg};color:${c.text};
+    border:2.5px solid ${c.border};
+    display:flex;align-items:center;justify-content:center;
+    font-size:${fontSize}px;font-weight:800;
+    flex-shrink:0;overflow:hidden;
+    box-shadow:0 0 12px ${c.border}55;
+  `;
+  if (usuario.foto_url) {
+    return `<div style="${style}"><img src="${usuario.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'"></div>`;
+  }
+  return `<div style="${style}">${initials}</div>`;
+}
+
+// ══════════════════════════════════════════════
+// ── DASHBOARD
+// ══════════════════════════════════════════════
+function renderDashboard() {
+  garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
+  const mes = new Date().getMonth(), ano = new Date().getFullYear();
+  const ref = mesRef(mes, ano);
+  const alunosAtivos = DB.usuarios.filter(u => u.tipo === 'aluno');
+  const pagsMes = DB.pagamentos.filter(p => p.mes_referencia === ref);
+  // Bolsistas fora dos cálculos
+  const pagsFin = pagsMes.filter(p => {
+    const u = DB.usuarios.find(u => u.id === p.user_id);
+    return u && !u.bolsista;
+  });
+
+  const recebido = pagsFin.filter(p => p.status === 'pago').reduce((s,p) => s + p.valor, 0);
+  const pendente = pagsFin.filter(p => p.status === 'pendente').reduce((s,p) => s + p.valor, 0);
+  const total = recebido + pendente;
+  const inadimplentes = pagsFin.filter(p => p.status === 'pendente');
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Recebido</div>
+      <div class="stat-value green">R$${recebido}</div>
+      <div class="stat-detail">${pagsFin.filter(p=>p.status==='pago').length} alunos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pendente</div>
+      <div class="stat-value red">R$${pendente}</div>
+      <div class="stat-detail">${inadimplentes.length} alunos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total</div>
+      <div class="stat-value">R$${total}</div>
+      <div class="stat-detail">${mesToStr(mes,ano)}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Alunos</div>
+      <div class="stat-value white">${alunosAtivos.length}</div>
+      <div class="stat-detail">${DB.usuarios.filter(u=>u.tipo==='aluno'&&u.bolsista).length} bolsistas</div>
+    </div>
+    <div class="stat-card" style="grid-column:1/-1">
+      <div class="stat-label">Taxa de Inadimplência</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
+        <div class="stat-value red" style="font-size:24px">${total>0?Math.round(pendente/total*100):0}%</div>
+        <div class="prog-bar" style="flex:1"><div class="prog-fill" style="width:${total>0?Math.round(recebido/total*100):0}%;background:linear-gradient(90deg,var(--green),#66BB6A)"></div></div>
+      </div>
+    </div>
+  `;
+
+  const inadList = document.getElementById('dash-inadimplentes');
+  if (inadimplentes.length === 0) {
+    inadList.innerHTML = `<div class="scan-result success"><div class="scan-result-icon">🎉</div><div class="scan-result-text" style="color:var(--green)">Todos em dia!</div></div>`;
+    return;
+  }
+  inadList.innerHTML = inadimplentes.map(p => {
+    const u = DB.usuarios.find(u => u.id === p.user_id);
+    return `<div class="pag-item">
+      <div class="pag-info">
+        <div class="pag-nome">${u?.nome || '—'}</div>
+        <div class="pag-mes">Vence: ${p.data_vencimento}</div>
+      </div>
+      <span class="pag-valor">R$${p.valor}</span>
+      <button class="btn btn-ghost btn-sm" onclick="cobrarWhatsapp(${u.id})">💬</button>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+// ── ALUNOS
+// ══════════════════════════════════════════════
+let alunoFilterText = '';
+function renderAlunos(filter) {
+  garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
+  const mes = new Date().getMonth(), ano = new Date().getFullYear();
+  const ref = mesRef(mes, ano);
+  let lista = DB.usuarios.filter(u => u.tipo === 'aluno');
+
+  if (alunoFilterText) {
+    lista = lista.filter(u => u.nome.toLowerCase().includes(alunoFilterText.toLowerCase()));
+  }
+  const f = STATE.filterAluno;
+  if (f === 'pendente') {
+    lista = lista.filter(u => {
+      const p = getPagamento(u.id, mes, ano);
+      return !u.bolsista && (!p || p.status === 'pendente');
+    });
+  } else if (f === 'pago') {
+    lista = lista.filter(u => {
+      const p = getPagamento(u.id, mes, ano);
+      return p && p.status === 'pago';
+    });
+  } else if (f === 'bolsista') {
+    lista = lista.filter(u => u.bolsista);
+  }
+
+  document.getElementById('alunos-count').textContent = `${lista.length} aluno${lista.length!==1?'s':''}`;
+
+  if (!lista.length) {
+    document.getElementById('alunos-list').innerHTML = `<div class="empty"><div class="empty-icon">🔍</div><h3>Nenhum aluno encontrado</h3></div>`;
+    return;
+  }
+
+  document.getElementById('alunos-list').innerHTML = lista.map(u => {
+    const pag = getPagamento(u.id, mes, ano);
+    // STATUS EXCLUSIVAMENTE DA TABELA PAGAMENTOS
+    let statusBadge = '';
+    if (u.bolsista) {
+      statusBadge = `<span class="badge badge-bolsista">Bolsista</span>`;
+    } else if (u.projeto_social) {
+      statusBadge = `<span class="badge badge-social">Proj. Social</span>`;
+    } else {
+      const st = pag ? pag.status : 'pendente';
+      statusBadge = `<span class="badge ${st==='pago'?'badge-pago':'badge-pendente'}">${st==='pago'?'✓ Em dia':'⚠ Pendente'}</span>`;
+    }
+    return `
+    <div class="aluno-card" onclick="openAlunoDetail(${u.id})">
+      <div class="aluno-row">
+        ${avatarHTML(u, 52, 18)}
+        <div class="aluno-info">
+          <div class="aluno-name">${u.nome}</div>
+          <div class="aluno-meta">
+            <span class="badge badge-faixa">${u.faixa}</span>
+            ${statusBadge}
+          </div>
+        </div>
+      </div>
+      <div class="aluno-actions" onclick="event.stopPropagation()">
+        <button class="btn btn-ghost btn-sm" onclick="cobrarWhatsapp(${u.id})">💬 Cobrar</button>
+        <button class="btn btn-ghost btn-sm" onclick="openModalCadastro(${u.id})">✏️ Editar</button>
+        <button class="btn btn-danger btn-sm" onclick="confirmarExclusao(${u.id})">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterAlunos(v) { alunoFilterText = v; renderAlunos(); }
+function setFilterAluno(f, el) {
+  STATE.filterAluno = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderAlunos();
+}
+
+function openAlunoDetail(id) {
+  const u = DB.usuarios.find(u => u.id === id);
+  if (!u) return;
+  const mes = new Date().getMonth(), ano = new Date().getFullYear();
+  const pag = getPagamento(u.id, mes, ano);
+  const valor = calcularValor(u);
+  document.getElementById('detail-nome').textContent = u.nome.toUpperCase();
+
+  let pagInfo = '';
+  if (u.bolsista) {
+    pagInfo = `<span class="badge badge-bolsista">Bolsista — Isento</span>`;
+  } else {
+    const st = pag ? pag.status : 'pendente';
+    pagInfo = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <span class="badge ${st==='pago'?'badge-pago':'badge-pendente'}">${st==='pago'?'✓ Pago':'⚠ Pendente'}</span>
+        <span class="pag-valor">R$${valor}</span>
+      </div>
+      ${st==='pendente' && pag ? `<button class="btn btn-success btn-sm" onclick="marcarPagoUI(${pag.id})">✓ Marcar como Pago</button>` : ''}
+    `;
+  }
+
+  const presencasAluno = DB.presencas.filter(p => p.user_id === id).sort((a,b)=>b.data.localeCompare(a.data)).slice(0,5);
+
+  document.getElementById('modal-detail-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+      ${avatarHTML(u, 64, 22)}
+      <div>
+        <div class="badge badge-faixa" style="margin-bottom:4px">${u.faixa}</div>
+        <div style="font-size:13px;color:var(--gray-3)">${u.email}</div>
+        <div style="font-size:13px;color:var(--gray-3)">${u.telefone}</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-weight:600">Pagamento — ${mesToStr(mes,ano)}</div>
+    ${pagInfo}
+    <div class="divider"></div>
+    <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:10px;font-weight:600">Últimas Presenças</div>
+    ${presencasAluno.length ? presencasAluno.map(p=>`<div class="presenca-item"><div class="presenca-dot"></div><div><div class="presenca-data">${formatData(p.data)}</div></div></div>`).join('') : '<div class="text-gray text-sm">Nenhuma presença registrada</div>'}
+    <div class="divider"></div>
+    <div class="row-btns" style="margin-top:4px">
+      <button class="btn btn-ghost" onclick="cobrarWhatsapp(${u.id});closeModal('modal-aluno-detail')">💬 WhatsApp</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-aluno-detail');openModalCadastro(${u.id})">✏️ Editar</button>
+    </div>
+  `;
+  openModal('modal-aluno-detail');
+}
+
+function marcarPagoUI(pagId) {
+  marcarPago(pagId);
+  showToast('Pagamento confirmado! ✓', 'success');
+  closeModal('modal-aluno-detail');
+  renderAlunos();
+  renderDashboard();
+}
+
+// ══════════════════════════════════════════════
+// ── MODAL CADASTRO
+// ══════════════════════════════════════════════
+function openModalCadastro(id) {
+  STATE.editingId = id || null;
+  document.getElementById('modal-aluno-title').textContent = id ? 'EDITAR ALUNO' : 'NOVO ALUNO';
+
+  if (id) {
+    const u = DB.usuarios.find(u => u.id === id);
+    document.getElementById('f-nome').value = u.nome;
+    document.getElementById('f-email').value = u.email;
+    document.getElementById('f-tel').value = u.telefone;
+    document.getElementById('f-faixa').value = u.faixa;
+    document.getElementById('f-plano').value = u.plano;
+    document.getElementById('f-valor').value = u.valor_plano;
+    setSwitch('sw-bolsista','f-bolsista', u.bolsista);
+    setSwitch('sw-social','f-social', u.projeto_social);
+    document.getElementById('f-valor-custom').value = u.valor_personalizado || '';
+    document.getElementById('campo-valor-personalizado').style.display = u.projeto_social ? 'block':'none';
+    const menor = !!(u.responsavel_nome);
+    setSwitch('sw-menor','f-menor', menor);
+    document.getElementById('campos-responsavel').style.display = menor ? 'block':'none';
+    document.getElementById('f-resp-nome').value = u.responsavel_nome || '';
+    document.getElementById('f-resp-tel').value = u.responsavel_telefone || '';
+    // Foto existente
+    document.getElementById('f-foto-url').value = u.foto_url || '';
+    atualizarPreviewFoto(u.foto_url || '', u.faixa, u.nome);
+  } else {
+    document.getElementById('f-nome').value = '';
+    document.getElementById('f-email').value = '';
+    document.getElementById('f-tel').value = '';
+    document.getElementById('f-faixa').value = 'Branca';
+    document.getElementById('f-plano').value = 'Mensal';
+    document.getElementById('f-valor').value = '150';
+    setSwitch('sw-bolsista','f-bolsista',false);
+    setSwitch('sw-social','f-social',false);
+    document.getElementById('f-valor-custom').value = '';
+    document.getElementById('campo-valor-personalizado').style.display = 'none';
+    setSwitch('sw-menor','f-menor',false);
+    document.getElementById('campos-responsavel').style.display = 'none';
+    document.getElementById('f-resp-nome').value = '';
+    document.getElementById('f-resp-tel').value = '';
+    document.getElementById('f-foto-url').value = '';
+    atualizarPreviewFoto('', 'Branca', '');
+  }
+  openModal('modal-aluno');
+}
+
+function salvarAluno() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const tel = document.getElementById('f-tel').value.trim();
+  const faixa = document.getElementById('f-faixa').value;
+  const plano = document.getElementById('f-plano').value;
+  const valor = parseFloat(document.getElementById('f-valor').value) || 0;
+  const bolsista = document.getElementById('f-bolsista').value === 'true';
+  const social = document.getElementById('f-social').value === 'true';
+  const valorCustom = parseFloat(document.getElementById('f-valor-custom').value) || 0;
+  const menor = document.getElementById('f-menor').value === 'true';
+  const respNome = document.getElementById('f-resp-nome').value.trim();
+  const respTel = document.getElementById('f-resp-tel').value.trim();
+  const fotoUrl = document.getElementById('f-foto-url').value;
+
+  if (!nome || !email) { showToast('Preencha nome e email','error'); return; }
+  if (menor && (!respNome || !respTel)) { showToast('Responsável obrigatório para menores','error'); return; }
+
+  const existeEmail = DB.usuarios.find(u => u.email === email && u.id !== STATE.editingId);
+  if (existeEmail) { showToast('Email já cadastrado','error'); return; }
+
+  if (STATE.editingId) {
+    const u = DB.usuarios.find(u => u.id === STATE.editingId);
+    u.nome = nome; u.email = email; u.telefone = tel;
+    u.faixa = faixa; u.plano = plano; u.valor_plano = valor;
+    u.bolsista = bolsista; u.projeto_social = social;
+    u.valor_personalizado = valorCustom;
+    u.responsavel_nome = menor ? respNome : '';
+    u.responsavel_telefone = menor ? respTel : '';
+    if (fotoUrl) u.foto_url = fotoUrl; // PATCH foto separado
+    const mes = new Date().getMonth(), ano = new Date().getFullYear();
+    const pag = getPagamento(u.id, mes, ano);
+    if (pag && pag.status === 'pendente') pag.valor = calcularValor(u);
+    showToast('Aluno atualizado!', 'success');
+  } else {
+    const novoId = DB._nextId.usuarios++;
+    DB.usuarios.push({
+      id:novoId, nome, email, telefone:tel, foto_url: fotoUrl,
+      tipo:'aluno', faixa, plano, valor_plano:valor,
+      bolsista, projeto_social:social, valor_personalizado:valorCustom,
+      responsavel_nome: menor?respNome:'', responsavel_telefone:menor?respTel:'',
+      created_at: new Date().toISOString().split('T')[0],
+    });
+    garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
+    showToast('Aluno cadastrado!', 'success');
+  }
+  closeModal('modal-aluno');
+  renderAlunos();
+  renderDashboard();
+}
+
+function confirmarExclusao(id) {
+  const u = DB.usuarios.find(u => u.id === id);
+  document.getElementById('confirm-msg').textContent = `Excluir "${u.nome}"? Esta ação não pode ser desfeita.`;
+  document.getElementById('confirm-btn').onclick = () => {
+    // Remove usuário e dados associados
+    DB.usuarios = DB.usuarios.filter(u => u.id !== id);
+    DB.pagamentos = DB.pagamentos.filter(p => p.user_id !== id);
+    DB.presencas = DB.presencas.filter(p => p.user_id !== id);
+    closeModal('modal-confirm');
+    renderAlunos();
+    renderDashboard();
+    showToast('Aluno excluído', 'success');
+  };
+  openModal('modal-confirm');
+}
+
+// ══════════════════════════════════════════════
+// ── FOTO NO CADASTRO
+// ══════════════════════════════════════════════
+
+function triggerFotoInput(tipo) {
+  document.getElementById(tipo === 'camera' ? 'f-foto-camera' : 'f-foto-gallery').click();
+}
+
+function handleFotoCadastro(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  // Reduz tamanho da imagem antes de salvar
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const max = 400;
+      let w = img.width, h = img.height;
+      if (w > h) { if (w > max) { h = h * max / w; w = max; } }
+      else       { if (h > max) { w = w * max / h; h = max; } }
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      const url = canvas.toDataURL('image/jpeg', 0.82);
+      document.getElementById('f-foto-url').value = url;
+      const faixa = document.getElementById('f-faixa').value;
+      const nome  = document.getElementById('f-nome').value;
+      atualizarPreviewFoto(url, faixa, nome);
+      showToast('Foto adicionada! ✓', 'success');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+function atualizarPreviewFoto(url, faixa, nome) {
+  const c = corFaixa(faixa || 'Branca');
+  const preview = document.getElementById('f-avatar-preview');
+  preview.style.border = `3px solid ${c.border}`;
+  preview.style.boxShadow = `0 0 20px ${c.border}66, 0 0 0 4px ${c.bg}33`;
+
+  const removeBtn = document.getElementById('f-foto-remove');
+
+  if (url) {
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    if (removeBtn) removeBtn.style.display = 'inline-flex';
+  } else {
+    const initials = nome ? nome.split(' ').map(n=>n[0]).slice(0,2).join('') : '';
+    preview.style.background = initials ? c.bg : '#1E1E1E';
+    preview.innerHTML = initials
+      ? `<span style="color:${c.text};font-size:32px;font-weight:800">${initials}</span>`
+      : `<span id="f-avatar-icon" style="font-size:36px">📷</span>`;
+    if (removeBtn) removeBtn.style.display = 'none';
+  }
+}
+
+function atualizarPreviewNome() {
+  const nome  = document.getElementById('f-nome').value;
+  const faixa = document.getElementById('f-faixa').value;
+  const url   = document.getElementById('f-foto-url').value;
+  if (!url) atualizarPreviewFoto('', faixa, nome);
+}
+
+function removerFotoCadastro() {
+  document.getElementById('f-foto-url').value = '';
+  const faixa = document.getElementById('f-faixa').value;
+  const nome  = document.getElementById('f-nome').value;
+  atualizarPreviewFoto('', faixa, nome);
+  showToast('Foto removida', '');
+}
+
+// Atualiza cor do anel ao vivo quando muda a faixa
+document.addEventListener('DOMContentLoaded', () => {
+  const faixaSel = document.getElementById('f-faixa');
+  if (faixaSel) {
+    faixaSel.addEventListener('change', () => {
+      const url  = document.getElementById('f-foto-url').value;
+      const nome = document.getElementById('f-nome').value;
+      atualizarPreviewFoto(url, faixaSel.value, nome);
+    });
+  }
+});
+
+// ══════════════════════════════════════════════
+// ── FINANCEIRO
+// ══════════════════════════════════════════════
+function renderFinanceiro() {
+  const mes = STATE.mesFin, ano = STATE.anoFin;
+  document.getElementById('mes-label-fin').textContent = mesToStr(mes, ano).toUpperCase();
+  garantirPagamentos(mes, ano);
+  const ref = mesRef(mes, ano);
+  let pags = DB.pagamentos.filter(p => p.mes_referencia === ref);
+  const pagsFin = pags.filter(p => {
+    const u = DB.usuarios.find(u => u.id === p.user_id);
+    return u && !u.bolsista;
+  });
+  const recebido = pagsFin.filter(p=>p.status==='pago').reduce((s,p)=>s+p.valor,0);
+  const pendente = pagsFin.filter(p=>p.status==='pendente').reduce((s,p)=>s+p.valor,0);
+
+  document.getElementById('fin-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-label">Recebido</div>
+      <div class="stat-value green">R$${recebido}</div>
+      <div class="stat-detail">${pagsFin.filter(p=>p.status==='pago').length} pagamentos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Pendente</div>
+      <div class="stat-value red">R$${pendente}</div>
+      <div class="stat-detail">${pagsFin.filter(p=>p.status==='pendente').length} em aberto</div>
+    </div>
+  `;
+
+  const f = STATE.filterPag;
+  if (f === 'pendente') pags = pags.filter(p=>p.status==='pendente');
+  else if (f === 'pago') pags = pags.filter(p=>p.status==='pago');
+
+  if (!pags.length) {
+    document.getElementById('pagamentos-list').innerHTML = `<div class="empty"><div class="empty-icon">📭</div><h3>Nenhum registro</h3></div>`;
+    return;
+  }
+
+  document.getElementById('pagamentos-list').innerHTML = pags.map(p => {
+    const u = DB.usuarios.find(u => u.id === p.user_id);
+    if (!u) return '';
+    const isBolsista = u.bolsista;
+    return `<div class="pag-item">
+      <div class="pag-info">
+        <div class="pag-nome">${u.nome}</div>
+        <div class="pag-mes">${isBolsista ? '🎓 Bolsista' : u.projeto_social ? '💙 Proj. Social' : p.data_pagamento ? `Pago: ${formatData(p.data_pagamento)}` : `Vence: ${p.data_vencimento}`}</div>
+      </div>
+      ${!isBolsista ? `<span class="pag-valor mono">R$${p.valor}</span>` : '<span class="pag-valor mono">R$0</span>'}
+      <span class="badge ${p.status==='pago'?'badge-pago':'badge-pendente'}">${p.status==='pago'?'Pago':'Pend.'}</span>
+      ${p.status==='pendente' && !isBolsista ? `<button class="btn btn-success btn-sm" style="margin-left:8px" onclick="marcarPagoFin(${p.id})">✓</button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function marcarPagoFin(pagId) {
+  marcarPago(pagId); // UPDATE apenas na tabela pagamentos
+  showToast('Pago! ✓', 'success');
+  renderFinanceiro();
+  renderDashboard();
+}
+
+function changeMes(d) {
+  STATE.mesFin += d;
+  if (STATE.mesFin < 0) { STATE.mesFin = 11; STATE.anoFin--; }
+  if (STATE.mesFin > 11) { STATE.mesFin = 0; STATE.anoFin++; }
+  renderFinanceiro();
+}
+
+function setFilterPag(f, el) {
+  STATE.filterPag = f;
+  document.querySelectorAll('#tab-financeiro .filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderFinanceiro();
+}
+
+// ══════════════════════════════════════════════
+// ── PERFIL ALUNO (sem dados financeiros)
+// ══════════════════════════════════════════════
+function renderPerfil() {
+  const u = STATE.currentUser;
+  document.getElementById('perfil-nome-el').textContent = u.nome;
+  document.getElementById('perfil-faixa-el').textContent = `Faixa ${u.faixa}`;
+  document.getElementById('perfil-email-el').textContent = u.email;
+  document.getElementById('perfil-tel-el').textContent = u.telefone || 'Não informado';
+  document.getElementById('perfil-plano-el').textContent = u.plano || 'Mensal';
+
+  const c = corFaixa(u.faixa);
+  const av = document.getElementById('perfil-avatar-el');
+  const initials = u.nome.split(' ').map(n => n[0]).slice(0, 2).join('');
+
+  // Aplica cor de faixa na borda e fundo do avatar
+  av.style.background = u.foto_url ? '#000' : c.bg;
+  av.style.borderColor = c.border;
+  av.style.boxShadow = `0 0 20px ${c.border}66`;
+
+  if (u.foto_url) {
+    av.innerHTML = `<img src="${u.foto_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%" onerror="this.style.display='none'"><div class="photo-edit">📷</div>`;
+  } else {
+    av.style.color = c.text;
+    av.innerHTML = `<span id="perfil-avatar-initials" style="color:${c.text};font-size:36px;font-weight:800">${initials}</span><div class="photo-edit">📷</div>`;
+  }
+
+  // Cor da faixa no texto também
+  document.getElementById('perfil-faixa-el').style.color = c.border === '#D4AF37' ? 'var(--gold)' : c.bg;
+}
+
+function openPhotoEdit() {
+  document.getElementById('photo-input').click();
+}
+
+function handlePhotoChange(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const url = ev.target.result;
+    // PATCH /usuarios/:id/foto — apenas foto_url
+    patchFoto(STATE.currentUser.id, url);
+    STATE.currentUser.foto_url = url;
+    renderPerfil();
+    // Atualiza topbar avatar
+    document.getElementById('topbar-avatar').innerHTML = `<img src="${url}">`;
+    showToast('Foto atualizada!', 'success');
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+// ══════════════════════════════════════════════
+// ── PRESENÇA ALUNO — SCANNER REAL
+// ══════════════════════════════════════════════
+
+// Token válido gravado no QR Code fixo na parede da academia
+const QR_TOKEN_VALIDO = 'FLASHTEAM-PRESENCA-2024';
+
+let scannerStream = null;
+let scannerRAF = null;
+let jsqrLoaded = false;
+
+function renderPresenca() {
+  const u = STATE.currentUser;
+  const presencas = DB.presencas
+    .filter(p => p.user_id === u.id)
+    .sort((a,b) => b.data.localeCompare(a.data));
+
+  // Garante estado idle ao entrar na aba
+  mostrarEstado('idle');
+
+  document.getElementById('presencas-list').innerHTML = presencas.length
+    ? presencas.map(p => `
+        <div class="presenca-item">
+          <div class="presenca-dot"></div>
+          <div>
+            <div class="presenca-data">${formatData(p.data)}</div>
+            <div class="presenca-dia text-sm text-gray">${diaSemana(p.data)}</div>
+          </div>
+        </div>`).join('')
+    : `<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma presença ainda</p></div>`;
+}
+
+function mostrarEstado(estado) {
+  document.getElementById('pres-idle').style.display     = estado === 'idle'     ? 'block' : 'none';
+  document.getElementById('pres-scanner').style.display  = estado === 'scanner'  ? 'block' : 'none';
+  document.getElementById('pres-resultado').style.display = estado === 'resultado' ? 'block' : 'none';
+}
+
+async function abrirScanner() {
+  mostrarEstado('scanner');
+
+  // Carrega jsQR dinamicamente na primeira vez
+  if (!jsqrLoaded) {
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+      s.onload = () => { jsqrLoaded = true; res(); };
+      s.onerror = rej;
+      document.head.appendChild(s);
+    });
+  }
+
+  try {
+    scannerStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+    });
+    const video = document.getElementById('qr-video');
+    video.srcObject = scannerStream;
+    await video.play();
+    lerFrames();
+  } catch(e) {
+    fecharScanner();
+    mostrarResultado(false, 'Câmera não autorizada. Permita o acesso nas configurações do navegador.');
+  }
+}
+
+function lerFrames() {
+  const video  = document.getElementById('qr-video');
+  const canvas = document.getElementById('qr-canvas');
+  const ctx    = canvas.getContext('2d');
+
+  function tick() {
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+
+      if (code) {
+        fecharScanner();
+        processarQR(code.data);
+        return; // para o loop
+      }
+    }
+    scannerRAF = requestAnimationFrame(tick);
+  }
+  scannerRAF = requestAnimationFrame(tick);
+}
+
+function fecharScanner() {
+  if (scannerRAF) { cancelAnimationFrame(scannerRAF); scannerRAF = null; }
+  if (scannerStream) { scannerStream.getTracks().forEach(t => t.stop()); scannerStream = null; }
+  const video = document.getElementById('qr-video');
+  if (video) { video.srcObject = null; }
+  mostrarEstado('idle');
+}
+
+function processarQR(conteudo) {
+  // Valida se é o QR Code oficial da Flash Team
+  if (conteudo !== QR_TOKEN_VALIDO) {
+    mostrarResultado(false, 'QR Code inválido. Use o código fixado na parede da academia.');
+    return;
+  }
+  // Registra presença (UNIQUE por dia)
+  const u = STATE.currentUser;
+  const res = registrarPresencaDB(u.id);
+  mostrarResultado(res.ok, res.msg);
+  if (res.ok) renderPresencaLista();
+}
+
+function mostrarResultado(ok, msg) {
+  mostrarEstado('resultado');
+  const hoje = new Date().toISOString().split('T')[0];
+  document.getElementById('pres-resultado').innerHTML = `
+    <div class="scan-result ${ok ? 'success' : 'error'}">
+      <div class="scan-result-icon">${ok ? '✅' : '⚠️'}</div>
+      <div class="scan-result-text" style="color:var(--${ok?'green':'red'})">${ok ? 'Presença Confirmada!' : 'Atenção'}</div>
+      <div class="scan-result-sub">${msg}</div>
+      ${ok ? `<div style="margin-top:8px;font-size:13px;color:var(--gray-3)">${formatData(hoje)}</div>` : ''}
+    </div>
+    <button class="btn btn-ghost" onclick="mostrarEstado('idle')" style="margin-top:16px">← Voltar</button>
+  `;
+  showToast(msg, ok ? 'success' : 'error');
+}
+
+function renderPresencaLista() {
+  const u = STATE.currentUser;
+  const presencas = DB.presencas
+    .filter(p => p.user_id === u.id)
+    .sort((a,b) => b.data.localeCompare(a.data));
+  document.getElementById('presencas-list').innerHTML = presencas.length
+    ? presencas.map(p => `
+        <div class="presenca-item">
+          <div class="presenca-dot"></div>
+          <div>
+            <div class="presenca-data">${formatData(p.data)}</div>
+            <div class="presenca-dia text-sm text-gray">${diaSemana(p.data)}</div>
+          </div>
+        </div>`).join('')
+    : `<div class="empty"><div class="empty-icon">📅</div><p>Nenhuma presença ainda</p></div>`;
+}
+
+// ══════════════════════════════════════════════
+// ── PRESENÇA ADMIN
+// ══════════════════════════════════════════════
+function renderPresencaAdmin() {
+  const hoje = new Date().toISOString().split('T')[0];
+  const presHoje = DB.presencas.filter(p => p.data === hoje);
+  const html = presHoje.length ? presHoje.map(p => {
+    const u = DB.usuarios.find(u => u.id === p.user_id);
+    return `<div class="presenca-item">
+      <div class="presenca-dot"></div>
+      <div>
+        <div class="presenca-data">${u?.nome || '—'}</div>
+        <div class="presenca-dia text-sm text-gray">${u?.faixa || ''} • Hoje</div>
+      </div>
+    </div>`;
+  }).join('') : `<div class="empty"><div class="empty-icon">📋</div><h3>Sem presenças hoje</h3></div>`;
+
+  document.getElementById('presencas-admin-list').innerHTML = `
+    <div class="stat-card" style="margin-bottom:16px">
+      <div class="stat-label">Presenças Hoje</div>
+      <div class="stat-value white">${presHoje.length}</div>
+      <div class="stat-detail">${formatData(hoje)}</div>
+    </div>
+    ${html}
+  `;
+}
+
+// ══════════════════════════════════════════════
+// ── WHATSAPP
+// ══════════════════════════════════════════════
+function cobrarWhatsapp(userId) {
+  const u = DB.usuarios.find(u => u.id === userId);
+  if (!u) return;
+  const tel = u.telefone.replace(/\D/g,'');
+  const msg = encodeURIComponent(`Olá ${u.nome.split(' ')[0]}, sua mensalidade da Flash Team está pendente. Chave PIX: 06356911166 🥋`);
+  window.open(`https://wa.me/55${tel}?text=${msg}`, '_blank');
+}
+
+function abrirContato() {
+  window.open(`https://wa.me/5511999990001?text=${encodeURIComponent('Olá, preciso de ajuda com minha conta na Flash Team 🥋')}`, '_blank');
+}
+
+function copiarPix() {
+  navigator.clipboard?.writeText('06356911166').then(() => showToast('Chave PIX copiada! 📋', 'success')).catch(() => showToast('Chave: 06356911166', 'success'));
+}
+
+// ══════════════════════════════════════════════
+// ── UI HELPERS
+// ══════════════════════════════════════════════
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+// Fechar modal clicando fora
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) { o.classList.remove('open'); document.body.style.overflow=''; } });
+});
+
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type}`;
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function toggleSwitch(swId, hiddenId) {
+  const sw = document.getElementById(swId);
+  const hid = document.getElementById(hiddenId);
+  const val = hid.value === 'true';
+  sw.classList.toggle('on', !val);
+  hid.value = String(!val);
+  if (hiddenId === 'f-social') {
+    document.getElementById('campo-valor-personalizado').style.display = !val ? 'block':'none';
+  }
+}
+function setSwitch(swId, hiddenId, val) {
+  document.getElementById(swId).classList.toggle('on', val);
+  document.getElementById(hiddenId).value = String(val);
+}
+function toggleResponsavel() {
+  const val = document.getElementById('f-menor').value === 'true';
+  document.getElementById('campos-responsavel').style.display = val ? 'block':'none';
+}
+
+function mesToStr(mes, ano) {
+  const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  return `${meses[mes]} ${ano}`;
+}
+
+function formatData(str) {
+  if (!str) return '—';
+  const [y,m,d] = str.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function diaSemana(str) {
+  const dias = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const d = new Date(str + 'T12:00:00');
+  return dias[d.getDay()];
+}
+
+// ── Inicialização
+document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+document.getElementById('login-senha').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
