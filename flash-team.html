@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta http-equiv="Permissions-Policy" content="camera=*">
 <title>Flash Team — Jiu-Jitsu Academy</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -966,44 +967,86 @@ const STATE = {
   editingId: null,
 };
 
-// ── BANCO SIMULADO (backend in-memory) ──
+// ══════════════════════════════════════════════
+// ── SUPABASE — BANCO DE DADOS REAL
+// ══════════════════════════════════════════════
+const SUPA_URL = 'https://cofahxnvqqscrwtmldes.supabase.co';
+const SUPA_KEY = 'sb_publishable_A-hA33onWx7dGNVIT3oXYA_GkjoUE6n';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+
+// ── DB local (cache em memória) ──
 const DB = {
-  usuarios: [
-    {id:1,nome:'Pedro Moura',email:'pedro@flashteam.com',senha:'Flash@2024',telefone:'11999990001',foto_url:'',tipo:'admin',faixa:'Preta',plano:'Mensal',valor_plano:0,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-01'},
-    {id:2,nome:'Carlos Silva',email:'carlos@aluno.com',senha:'carlos123',telefone:'11999990002',foto_url:'',tipo:'aluno',faixa:'Azul',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-02-10'},
-    {id:3,nome:'Ana Beatriz',email:'ana@aluno.com',senha:'ana123',telefone:'11999990003',foto_url:'',tipo:'aluno',faixa:'Branca',plano:'Mensal',valor_plano:120,bolsista:true,projeto_social:false,valor_personalizado:0,responsavel_nome:'Márcia Lima',responsavel_telefone:'11999990033',created_at:'2024-03-15'},
-    {id:4,nome:'Rafael Costa',email:'rafael@aluno.com',senha:'rafael123',telefone:'11999990004',foto_url:'',tipo:'aluno',faixa:'Roxa',plano:'Mensal',valor_plano:180,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-20'},
-    {id:5,nome:'Júlia Mendes',email:'julia@aluno.com',senha:'julia123',telefone:'11999990005',foto_url:'',tipo:'aluno',faixa:'Verde',plano:'Mensal',valor_plano:150,bolsista:false,projeto_social:true,valor_personalizado:80,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-04-05'},
-    {id:6,nome:'Thiago Oliveira',email:'thiago@aluno.com',senha:'thiago123',telefone:'11999990006',foto_url:'',tipo:'aluno',faixa:'Marrom',plano:'Mensal',valor_plano:200,bolsista:false,projeto_social:false,valor_personalizado:0,responsavel_nome:'',responsavel_telefone:'',created_at:'2024-01-10'},
-  ],
-
-  // ÚNICA fonte de verdade para pagamentos
-  pagamentos: [
-    {id:1,user_id:2,mes_referencia:'2025-01',status:'pago',valor:150,data_pagamento:'2025-01-05',data_vencimento:'2025-01-10'},
-    {id:2,user_id:4,mes_referencia:'2025-01',status:'pago',valor:180,data_pagamento:'2025-01-07',data_vencimento:'2025-01-10'},
-    {id:3,user_id:5,mes_referencia:'2025-01',status:'pago',valor:80,data_pagamento:'2025-01-08',data_vencimento:'2025-01-10'},
-    {id:4,user_id:6,mes_referencia:'2025-01',status:'pago',valor:200,data_pagamento:'2025-01-09',data_vencimento:'2025-01-10'},
-    {id:5,user_id:2,mes_referencia:'2025-04',status:'pendente',valor:150,data_pagamento:null,data_vencimento:'2025-04-10'},
-    {id:6,user_id:4,mes_referencia:'2025-04',status:'pago',valor:180,data_pagamento:'2025-04-03',data_vencimento:'2025-04-10'},
-    {id:7,user_id:5,mes_referencia:'2025-04',status:'pendente',valor:80,data_pagamento:null,data_vencimento:'2025-04-10'},
-    {id:8,user_id:6,mes_referencia:'2025-04',status:'pago',valor:200,data_pagamento:'2025-04-02',data_vencimento:'2025-04-10'},
-    {id:9,user_id:2,mes_referencia:'2026-04',status:'pendente',valor:150,data_pagamento:null,data_vencimento:'2026-04-10'},
-    {id:10,user_id:4,mes_referencia:'2026-04',status:'pago',valor:180,data_pagamento:'2026-04-03',data_vencimento:'2026-04-10'},
-    {id:11,user_id:5,mes_referencia:'2026-04',status:'pendente',valor:80,data_pagamento:null,data_vencimento:'2026-04-10'},
-    {id:12,user_id:6,mes_referencia:'2026-04',status:'pago',valor:200,data_pagamento:'2026-04-02',data_vencimento:'2026-04-10'},
-  ],
-
-  presencas: [
-    {id:1,user_id:2,data:'2026-04-14'},
-    {id:2,user_id:2,data:'2026-04-12'},
-    {id:3,user_id:2,data:'2026-04-10'},
-    {id:4,user_id:2,data:'2026-04-08'},
-    {id:5,user_id:4,data:'2026-04-14'},
-    {id:6,user_id:4,data:'2026-04-13'},
-    {id:7,user_id:6,data:'2026-04-15'},
-  ],
-  _nextId: { usuarios:7, pagamentos:13, presencas:8 },
+  usuarios: [],
+  pagamentos: [],
+  presencas: [],
+  _nextId: { usuarios:1, pagamentos:1, presencas:1 },
 };
+
+// ── Tela de carregamento ──
+function mostrarLoading(msg) {
+  let el = document.getElementById('loading-overlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading-overlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(8,8,8,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;gap:16px';
+    el.innerHTML = `
+      <div style="font-family:Bebas Neue,sans-serif;font-size:48px;letter-spacing:4px;background:linear-gradient(135deg,#F0CD6A,#D4AF37);-webkit-background-clip:text;-webkit-text-fill-color:transparent">FLASH TEAM</div>
+      <div id="loading-msg" style="font-family:Syne,sans-serif;font-size:14px;color:#888;letter-spacing:1px"></div>
+      <div style="width:48px;height:48px;border:3px solid #333;border-top-color:#D4AF37;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+    `;
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(style);
+    document.body.appendChild(el);
+  }
+  document.getElementById('loading-msg').textContent = msg || 'Carregando...';
+  el.style.display = 'flex';
+}
+function esconderLoading() {
+  const el = document.getElementById('loading-overlay');
+  if (el) el.style.display = 'none';
+}
+
+// ── Carregar todos os dados do Supabase ──
+async function carregarDados() {
+  mostrarLoading('Conectando ao banco de dados...');
+  try {
+    const [{ data: usuarios }, { data: pagamentos }, { data: presencas }] = await Promise.all([
+      supa.from('usuarios').select('*'),
+      supa.from('pagamentos').select('*'),
+      supa.from('presencas').select('*'),
+    ]);
+    DB.usuarios   = usuarios   || [];
+    DB.pagamentos = pagamentos || [];
+    DB.presencas  = presencas  || [];
+
+    // Calcula próximos IDs
+    DB._nextId.usuarios   = DB.usuarios.length   ? Math.max(...DB.usuarios.map(u=>u.id))   + 1 : 1;
+    DB._nextId.pagamentos = DB.pagamentos.length ? Math.max(...DB.pagamentos.map(p=>p.id)) + 1 : 1;
+    DB._nextId.presencas  = DB.presencas.length  ? Math.max(...DB.presencas.map(p=>p.id))  + 1 : 1;
+
+    esconderLoading();
+    return true;
+  } catch(e) {
+    esconderLoading();
+    showToast('Erro ao conectar. Verifique sua internet.', 'error');
+    return false;
+  }
+}
+
+// ── Salvar no Supabase ──
+async function salvarDB() {
+  // Não faz nada — cada operação salva individualmente
+}
+
+function salvarAcessoLocal(email, senha) {
+  if (!lembrarAtivo) return;
+  try {
+    localStorage.setItem('ft_email', email);
+    localStorage.setItem('ft_senha', senha);
+    localStorage.setItem('ft_lembrar', '1');
+  } catch(e) {}
+}
 
 // ══════════════════════════════════════════════
 // ── BACKEND LOGIC (Single Source of Truth)
@@ -1041,44 +1084,43 @@ function marcarPago(pagId) {
   if (!pag) return false;
   pag.status = 'pago';
   pag.data_pagamento = new Date().toISOString().split('T')[0];
+  // Salva no Supabase
+  supa.from('pagamentos').update({ status:'pago', data_pagamento: pag.data_pagamento }).eq('id', pagId).then(()=>{});
   return true;
 }
 
-// Garantir que todos alunos têm registro de pagamento para o mês atual
-function garantirPagamentos(mes, ano) {
+async function garantirPagamentos(mes, ano) {
   const alunos = DB.usuarios.filter(u => u.tipo === 'aluno');
-  alunos.forEach(u => {
-    const existing = getPagamento(u.id, mes, ano);
+  const ref = mesRef(mes, ano);
+  const venc = `${ano}-${String(mes+1).padStart(2,'0')}-10`;
+  for (const u of alunos) {
+    const existing = DB.pagamentos.find(p => p.user_id === u.id && p.mes_referencia === ref);
     if (!existing) {
-      const ref = mesRef(mes, ano);
       const valor = calcularValor(u);
-      DB.pagamentos.push({
-        id: DB._nextId.pagamentos++,
-        user_id: u.id,
-        mes_referencia: ref,
-        status: 'pendente',
-        valor: valor,
-        data_pagamento: null,
-        data_vencimento: `${ano}-${String(mes+1).padStart(2,'0')}-10`,
-      });
+      const novo = { user_id: u.id, mes_referencia: ref, status: 'pendente', valor, data_pagamento: null, data_vencimento: venc };
+      const { data } = await supa.from('pagamentos').insert(novo).select().single();
+      if (data) { DB.pagamentos.push(data); }
     }
-  });
+  }
 }
 
 // PATCH foto (rota separada — não altera pagamentos)
 function patchFoto(userId, fotoUrl) {
   const u = DB.usuarios.find(u => u.id === userId);
   if (!u) return false;
-  u.foto_url = fotoUrl;  // SOMENTE foto_url
+  u.foto_url = fotoUrl;
+  supa.from('usuarios').update({ foto_url: fotoUrl }).eq('id', userId).then(()=>{});
   return true;
 }
 
 // Registrar presença (UNIQUE user+data)
-function registrarPresencaDB(userId) {
+async function registrarPresencaDB(userId) {
   const hoje = new Date().toISOString().split('T')[0];
   const existing = DB.presencas.find(p => p.user_id === userId && p.data === hoje);
   if (existing) return {ok:false, msg:'Presença já registrada hoje!'};
-  DB.presencas.push({id: DB._nextId.presencas++, user_id: userId, data: hoje});
+  const { data, error } = await supa.from('presencas').insert({ user_id: userId, data: hoje }).select().single();
+  if (error) return {ok:false, msg:'Erro ao registrar presença. Tente novamente.'};
+  DB.presencas.push(data);
   return {ok:true, msg:'Presença registrada com sucesso!'};
 }
 
@@ -1091,7 +1133,7 @@ function doLogin() {
   const user = DB.usuarios.find(u => u.email === email);
   if (!user) { showToast('Email não encontrado','error'); return; }
   if (user.senha && user.senha !== senha) { showToast('Senha incorreta','error'); return; }
-  salvarAcesso(email, senha);
+  salvarAcessoLocal(email, senha);
   STATE.currentUser = user;
   enterApp();
 }
@@ -1500,23 +1542,37 @@ function salvarAluno() {
     u.valor_personalizado = valorCustom;
     u.responsavel_nome = menor ? respNome : '';
     u.responsavel_telefone = menor ? respTel : '';
-    if (fotoUrl) u.foto_url = fotoUrl; // PATCH foto separado
+    if (fotoUrl) u.foto_url = fotoUrl;
+    const updates = { nome, email, telefone:tel, senha, faixa, plano, valor_plano:valor,
+      bolsista, projeto_social:social, valor_personalizado:valorCustom,
+      responsavel_nome:menor?respNome:'', responsavel_telefone:menor?respTel:'' };
+    if (fotoUrl) updates.foto_url = fotoUrl;
+    supa.from('usuarios').update(updates).eq('id', STATE.editingId).then(()=>{});
     const mes = new Date().getMonth(), ano = new Date().getFullYear();
     const pag = getPagamento(u.id, mes, ano);
-    if (pag && pag.status === 'pendente') pag.valor = calcularValor(u);
+    if (pag && pag.status === 'pendente') {
+      pag.valor = calcularValor(u);
+      supa.from('pagamentos').update({ valor: pag.valor }).eq('id', pag.id).then(()=>{});
+    }
     showToast('Aluno atualizado!', 'success');
   } else {
-    const novoId = DB._nextId.usuarios++;
-    DB.usuarios.push({
-      id:novoId, nome, email, telefone:tel, foto_url: fotoUrl,
-      senha: senha,
-      tipo:'aluno', faixa, plano, valor_plano:valor,
-      bolsista, projeto_social:social, valor_personalizado:valorCustom,
-      responsavel_nome: menor?respNome:'', responsavel_telefone:menor?respTel:'',
-      created_at: new Date().toISOString().split('T')[0],
+    mostrarLoading('Cadastrando aluno...');
+    const novoAluno = { nome, email, telefone:tel, foto_url:fotoUrl, senha,
+      tipo:'aluno', faixa, plano, valor_plano:valor, bolsista,
+      projeto_social:social, valor_personalizado:valorCustom,
+      responsavel_nome:menor?respNome:'', responsavel_telefone:menor?respTel:'',
+      created_at: new Date().toISOString().split('T')[0] };
+    supa.from('usuarios').insert(novoAluno).select().single().then(async ({ data, error }) => {
+      if (error) { esconderLoading(); showToast('Erro ao cadastrar: ' + error.message, 'error'); return; }
+      DB.usuarios.push(data);
+      await garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
+      esconderLoading();
+      showToast('Aluno cadastrado! ✓', 'success');
+      closeModal('modal-aluno');
+      renderAlunos();
+      renderDashboard();
     });
-    garantirPagamentos(new Date().getMonth(), new Date().getFullYear());
-    showToast('Aluno cadastrado!', 'success');
+    return;
   }
   closeModal('modal-aluno');
   renderAlunos();
@@ -1526,11 +1582,15 @@ function salvarAluno() {
 function confirmarExclusao(id) {
   const u = DB.usuarios.find(u => u.id === id);
   document.getElementById('confirm-msg').textContent = `Excluir "${u.nome}"? Esta ação não pode ser desfeita.`;
-  document.getElementById('confirm-btn').onclick = () => {
-    // Remove usuário e dados associados
-    DB.usuarios = DB.usuarios.filter(u => u.id !== id);
+  document.getElementById('confirm-btn').onclick = async () => {
+    mostrarLoading('Excluindo...');
+    await supa.from('presencas').delete().eq('user_id', id);
+    await supa.from('pagamentos').delete().eq('user_id', id);
+    await supa.from('usuarios').delete().eq('id', id);
+    DB.usuarios   = DB.usuarios.filter(u => u.id !== id);
     DB.pagamentos = DB.pagamentos.filter(p => p.user_id !== id);
-    DB.presencas = DB.presencas.filter(p => p.user_id !== id);
+    DB.presencas  = DB.presencas.filter(p => p.user_id !== id);
+    esconderLoading();
     closeModal('modal-confirm');
     renderAlunos();
     renderDashboard();
@@ -1745,6 +1805,7 @@ function salvarSenhaAdmin() {
   const u = DB.usuarios.find(u => u.id === STATE.currentUser.id);
   u.senha = nova;
   STATE.currentUser.senha = nova;
+  supa.from('usuarios').update({ senha: nova }).eq('id', STATE.currentUser.id).then(()=>{});
   document.getElementById('admin-senha-nova').value = '';
   document.getElementById('admin-senha-conf').value = '';
   showToast('Senha atualizada com sucesso! 🔐', 'success');
@@ -1844,13 +1905,13 @@ async function processarFotoQR(event) {
   reader.readAsDataURL(file);
 }
 
-function processarQR(conteudo) {
+async function processarQR(conteudo) {
   if (conteudo !== QR_TOKEN_VALIDO) {
     mostrarResultado(false, 'QR Code inválido. Use o código fixado na parede da academia.');
     return;
   }
   const u = STATE.currentUser;
-  const res = registrarPresencaDB(u.id);
+  const res = await registrarPresencaDB(u.id);
   mostrarResultado(res.ok, res.msg);
   if (res.ok) renderPresencaLista();
 }
@@ -2005,15 +2066,6 @@ function toggleLembrar() {
   check.style.color = '#000';
 }
 
-function salvarAcesso(email, senha) {
-  if (!lembrarAtivo) return;
-  try {
-    localStorage.setItem('ft_email', email);
-    localStorage.setItem('ft_senha', senha);
-    localStorage.setItem('ft_lembrar', '1');
-  } catch(e) {}
-}
-
 function carregarAcessoSalvo() {
   try {
     const lembrar = localStorage.getItem('ft_lembrar');
@@ -2032,7 +2084,7 @@ function carregarAcessoSalvo() {
       }
       // Se tiver dados salvos, entra automaticamente
       if (email && senha) {
-        const user = DB.usuarios.find(u => u.email === email);
+        const user = DB.usuarios.find(u => u.email === email && u.senha === senha);
         if (user) { STATE.currentUser = user; enterApp(); }
       }
     }
@@ -2050,8 +2102,12 @@ function limparAcessoSalvo() {
 // ── Inicialização
 document.getElementById('login-email').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 document.getElementById('login-senha').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-// Carrega acesso salvo automaticamente
-carregarAcessoSalvo();
+
+// Carrega dados do Supabase e depois verifica acesso salvo
+(async () => {
+  await carregarDados();
+  carregarAcessoSalvo();
+})();
 </script>
 </body>
 </html>
