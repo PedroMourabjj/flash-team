@@ -384,6 +384,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:8000;o
         <button class="btn bg sm" onclick="abrirConceito()" style="width:auto">🥋 Conceito</button>
         <button class="btn bg sm" onclick="goTab('avisos')" style="width:auto">📢 Avisos</button>
         <button class="btn bg sm" onclick="goTab('fotos')" style="width:auto">📸 Fotos</button>
+        <button class="btn bg sm" onclick="abrirAniversariantesAdmin()" style="width:auto">🎂 Aniversários</button>
       </div>
     </div>
     <div class="sg" id="d-stats"></div>
@@ -472,8 +473,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:8000;o
 
   <!-- TAB: HOME ALUNO -->
   <div id="tab-home" class="tab">
+    <div id="h-aniv"></div>
     <div id="h-avisos"></div>
     <div id="h-conc"></div>
+    <div id="h-meds"></div>
     <div class="qa-grid" id="h-qa"></div>
     <button class="scan-btn pulse" onclick="goTab('presenca')" style="margin-bottom:13px">📷 REGISTRAR PRESENÇA</button>
     <button class="btn bg" onclick="goTab('horarios-aluno')">🕐 HORÁRIOS E LOCALIZAÇÃO</button>
@@ -849,7 +852,7 @@ function goTab(id){
     financeiro:renderFin,'conquistas-admin':renderCQAdmin,conquistas:renderCQ,
     colegas:renderColegas,galeria:renderGaleria,
     fotos:renderFotosAdmin,avisos:renderAvisosAdmin,
-    horarios:renderHorAdmin,'horarios-aluno':()=>renderHorView('hor-lista-a'),
+    horarios:renderHorAdmin,'horarios-aluno':async()=>{await syncGradeFromSB();renderHorView('hor-lista-a');},
     perfil:renderPerfil,presenca:renderPres,particular:renderParticular,
   };
   if(MAP[id])MAP[id]();
@@ -914,6 +917,52 @@ function renderHome(){
   const prM=DB.pr.filter(p=>{if(p.user_id!==u.id)return false;const d=new Date(p.data+'T12:00:00');return d.getMonth()===m&&d.getFullYear()===a;});
   const prH=DB.pr.find(p=>p.user_id===u.id&&p.data===hj());
   const tot=getTot(u.id);const seq=getSeq(u.id);
+  // Medalhas desbloqueadas
+  verificarMedalhas(u.id);
+  const esp=getEsp(u.id);
+  const medsUnlock=[...MPRG.filter(m=>getPrg(u.id,m).ok),...MESP.filter(m=>esp.includes(m.id))];
+  // Aniversário
+  const hj2=new Date(),mHj=hj2.getMonth()+1,dHj=hj2.getDate();
+  let anivHtml='';
+  if(u.data_nascimento){
+    const[,mm,dd]=u.data_nascimento.split('-').map(Number);
+    if(mm===mHj&&dd===dHj){
+      const anos=hj2.getFullYear()-parseInt(u.data_nascimento.split('-')[0]);
+      anivHtml=`<div style="background:linear-gradient(135deg,rgba(212,175,55,0.16),rgba(212,175,55,0.05));border:1px solid rgba(212,175,55,0.35);border-radius:var(--r);padding:16px;margin-bottom:13px;text-align:center">
+        <div style="font-size:36px;margin-bottom:7px">🎂</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--gold-l)">Parabéns, ${u.nome.split(' ')[0]}!</div>
+        <div style="font-size:12px;color:var(--gray3);margin-top:4px">Hoje é seu aniversário! ${anos} anos de evolução 🥋</div>
+      </div>`;
+    }
+  }
+  // Colegas aniversariantes hoje
+  const colegasAniv=DB.u.filter(c=>{
+    if(c.tipo!=='aluno'||c.id===u.id||!c.data_nascimento)return false;
+    const[,mm2,dd2]=c.data_nascimento.split('-').map(Number);
+    return mm2===mHj&&dd2===dHj;
+  });
+  if(colegasAniv.length){
+    anivHtml+=`<div class="card" style="margin-bottom:13px">
+      <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎂 Aniversariante${colegasAniv.length>1?'s':''} hoje na equipe!</div>
+      ${colegasAniv.map(c=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--bd)">${avHTML(c,38,12)}<div style="flex:1"><div style="font-size:13px;font-weight:700">${c.nome}</div><div style="font-size:11px;color:var(--gray3)">Faixa ${c.faixa}</div></div><button class="btn bg xs" onclick="parabensColega(${c.id})">🎉</button></div>`).join('')}
+    </div>`;
+  }
+  // Medalhas na home
+  let medsHtml='';
+  if(medsUnlock.length){
+    medsHtml=`<div class="card" style="margin-bottom:13px">
+      <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:10px">🏅 Minhas Conquistas</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        ${medsUnlock.slice(0,6).map(m=>`<div style="background:var(--bg4);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:8px 10px;text-align:center;min-width:62px">
+          <div style="font-size:24px">${m.ic}</div>
+          <div style="font-size:9px;font-weight:800;color:var(--gold-l);margin-top:3px;letter-spacing:.3px;text-transform:uppercase;line-height:1.3">${m.nm}</div>
+        </div>`).join('')}
+        ${medsUnlock.length>6?`<div style="background:var(--bg4);border:1px solid var(--bdg);border-radius:10px;padding:8px 10px;text-align:center;min-width:62px;cursor:pointer" onclick="goTab('conquistas')"><div style="font-size:18px;color:var(--gold);font-weight:800">+${medsUnlock.length-6}</div><div style="font-size:9px;font-weight:800;color:var(--gray3);margin-top:3px">VER MAIS</div></div>`:''}
+      </div>
+    </div>`;
+  }
+  const hAnivEl=document.getElementById('h-aniv');if(hAnivEl)hAnivEl.innerHTML=anivHtml;
+  const hMedsEl=document.getElementById('h-meds');if(hMedsEl)hMedsEl.innerHTML=medsHtml;
   document.getElementById('h-qa').innerHTML=`
     <div class="qa"><div class="qa-ic">📅</div><div class="qa-lb">Treinos no Mês</div><div class="qa-val">${prM.length}</div></div>
     <div class="qa" style="${prH?'background:var(--green-bg);border-color:var(--green-bd)':''}"><div class="qa-ic">${prH?'✅':'⏳'}</div><div class="qa-lb">Presença Hoje</div><div class="qa-val" style="font-size:13px;color:${prH?'var(--green)':'var(--gray3)'}">${prH?'OK':'Pendente'}</div></div>
@@ -1173,6 +1222,10 @@ function abrirDet(id){
     <div class="dv"></div>
     <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:7px">Últimas Presenças</div>
     ${prAl.length?prAl.map(p=>`<div class="presi"><div class="prd"></div><div><div class="prd-r">${fmtD(p.data)}</div><div class="prd-s">${dsem(p.data)}</div></div></div>`).join(''):`<div style="font-size:12px;color:var(--gray3)">Nenhuma presença registrada</div>`}
+    <div class="dv"></div>
+    <div style="font-size:10px;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:7px">🏅 Conquistas</div>
+    ${(()=>{const cqP=MPRG.filter(m=>getPrg(id,m).ok);const cqE=MESP.filter(m=>cqEsp.includes(m.id));const all=[...cqP,...cqE];
+      return all.length?`<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px">${all.map(m=>`<div style="background:var(--bg4);border:1px solid rgba(212,175,55,0.18);border-radius:9px;padding:6px 9px;text-align:center"><div style="font-size:22px">${m.ic}</div><div style="font-size:9px;font-weight:800;color:var(--gold-l);margin-top:2px;text-transform:uppercase">${m.nm}</div></div>`).join('')}</div>`:'<div style="font-size:12px;color:var(--gray3);margin-bottom:11px">Nenhuma conquista ainda</div>';})()}
     <div class="dv"></div>
     <div class="rbtns"><button class="btn bg" onclick="cobrarWA(${id});fecharMo('mo-det')">💬 WhatsApp</button><button class="btn bp" onclick="fecharMo('mo-det');abrirCad(${id})">✏️ Editar</button></div>`;
   abrirMo('mo-det');
@@ -1654,7 +1707,7 @@ function togEsp(uid,mid,btn){
   const lst=getEsp(uid);const ok=lst.includes(mid);
   if(ok){setEsp(uid,lst.filter(m=>m!==mid));btn.className='adm-btn';btn.textContent='+ Conceder';}
   else{setEsp(uid,[...lst,mid]);btn.className='adm-btn c';btn.textContent='✓ Concedida';
-    const m=MESP.find(m=>m.id===mid);if(m)notifCQ(true,`${u?.nome||'Aluno'} recebeu: ${m.nm}!`);}
+    const mf=MESP.find(x=>x.id===mid);const uN=DB.u.find(x=>x.id===uid);if(mf)notifCQ(true,`${uN?.nome?.split(' ')[0]||'Aluno'} recebeu: ${mf.nm}!`);}
 }
 function togDsf(uid){
   const ok=getDsf(uid);
@@ -1668,6 +1721,17 @@ function togDsf(uid){
 }
 
 // ══ HORÁRIOS EDITÁVEIS ══
+async function syncGradeFromSB(){
+  try{
+    const adm=DB.u.find(u=>u.tipo==='admin');
+    if(adm&&adm.responsavel_nome&&adm.responsavel_nome.startsWith('GRADE:')){
+      const g=JSON.parse(adm.responsavel_nome.slice(6));
+      localStorage.setItem('ft_grade',JSON.stringify(g));
+      return g;
+    }
+  }catch(x){}
+  return null;
+}
 function getGrade(){
   try{const s=localStorage.getItem('ft_grade');if(s)return JSON.parse(s);}catch(x){}
   return[
@@ -1680,13 +1744,23 @@ function getGrade(){
     {d:'Domingo',a:'D',i:0,on:false,t:[]},
   ];
 }
-function salvarGrade(g){try{localStorage.setItem('ft_grade',JSON.stringify(g));}catch(x){}}
+function salvarGrade(g){
+  try{localStorage.setItem('ft_grade',JSON.stringify(g));}catch(x){}
+  // Sync to Supabase so all devices see updated schedule
+  const adm=DB.u.find(u=>u.tipo==='admin');
+  if(adm){
+    const json='GRADE:'+JSON.stringify(g);
+    SB.from('usuarios').update({responsavel_nome:json}).eq('id',adm.id).then(()=>{});
+    adm.responsavel_nome=json;
+  }
+}
 
 function renderHorAdmin(){
   ST.horEditing=false;
   const btn=document.getElementById('hor-btn');if(btn)btn.textContent='✏️ Editar';
   document.getElementById('hor-edit').style.display='none';
-  renderHorView('hor-view');
+  // Load from SB if available (cross-device sync)
+  syncGradeFromSB().then(()=>renderHorView('hor-view'));
 }
 function toggleEditHor(){
   ST.horEditing=!ST.horEditing;
@@ -1786,9 +1860,57 @@ function abrirContato(){window.open(`https://wa.me/5567991504822?text=${encodeUR
 function copiarPix(){navigator.clipboard?.writeText('06356911166').then(()=>toast('Chave PIX copiada! 📋','ok')).catch(()=>toast('Chave: 06356911166',''));}
 function abrirMaps(){window.open('https://maps.google.com/?q=Av.+Guaicurus,+2909,+Campo+Grande,+MS','_blank');}
 function abrirWaze(){window.open('https://waze.com/ul?q=Av.+Guaicurus+2909+Campo+Grande+MS','_blank');}
+function abrirAniversariantesAdmin(){
+  const hoje=new Date(),mH=hoje.getMonth()+1,dH=hoje.getDate();
+  // Organiza todos os alunos com data de nascimento por mês
+  const com=DB.u.filter(u=>u.tipo==='aluno'&&u.data_nascimento);
+  const hoje_list=com.filter(u=>{const[,m,d]=u.data_nascimento.split('-').map(Number);return m===mH&&d===dH;});
+  const mes_list=com.filter(u=>{const[,m,d]=u.data_nascimento.split('-').map(Number);return m===mH&&d!==dH;}).sort((a,b)=>{const[,,da]=a.data_nascimento.split('-').map(Number);const[,,db]=b.data_nascimento.split('-').map(Number);return da-db;});
+  // Próximos meses
+  const prox=[];
+  for(let i=1;i<=11;i++){
+    const nm=(mH-1+i)%12+1;
+    const al=com.filter(u=>{const[,m]=u.data_nascimento.split('-').map(Number);return m===nm;});
+    if(al.length)prox.push({mes:nm,alunos:al});
+  }
+  const MESES_N=['','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  const o=mkOverlay();
+  o.innerHTML=`<div style="background:var(--bg3);width:100%;max-width:480px;border-radius:20px 20px 0 0;border:1px solid var(--bdg);padding:20px;max-height:88dvh;overflow-y:auto;animation:slU .26s ease">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;color:var(--gold-l)">🎂 ANIVERSARIANTES</span>
+      <button onclick="this.closest('[data-ov]').remove()" style="background:var(--bg4);border:1px solid var(--gray);color:var(--gray3);width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    ${hoje_list.length?`
+    <div style="background:linear-gradient(135deg,rgba(212,175,55,0.14),rgba(212,175,55,0.04));border:1px solid rgba(212,175,55,0.3);border-radius:var(--r);padding:14px;margin-bottom:13px">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:11px">🎂 Hoje!</div>
+      ${hoje_list.map(u=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">${avHTML(u,42,14)}
+        <div style="flex:1"><div style="font-size:14px;font-weight:700">${u.nome}</div>
+          <div style="font-size:11px;color:var(--gray3)">${hoje.getFullYear()-parseInt(u.data_nascimento.split('-')[0])} anos · Faixa ${u.faixa}</div></div>
+        <button class="btn bg xs" onclick="parabens(${u.id})">🎉 Parabéns</button>
+      </div>`).join('')}
+    </div>`:''}
+    ${mes_list.length?`
+    <div style="font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:11px">📅 Este mês — ${MESES_N[mH]}</div>
+    ${mes_list.map(u=>{const[,m,d]=u.data_nascimento.split('-').map(Number);return`<div style="display:flex;align-items:center;gap:10px;padding:9px;background:var(--bg4);border-radius:var(--rs);margin-bottom:6px">${avHTML(u,38,12)}
+      <div style="flex:1"><div style="font-size:13px;font-weight:700">${u.nome}</div><div style="font-size:11px;color:var(--gray3)">Dia ${String(d).padStart(2,'0')} · ${hoje.getFullYear()-parseInt(u.data_nascimento.split('-')[0])} anos</div></div>
+      <button class="btn bg xs" onclick="parabens(${u.id})">💬</button>
+    </div>`;}).join('')}`:''}
+    ${prox.map(({mes,alunos})=>`
+    <div style="font-size:10px;letter-spacing:2px;color:var(--gray3);text-transform:uppercase;font-weight:700;margin:14px 0 8px">${MESES_N[mes]}</div>
+    ${alunos.sort((a,b)=>{const[,,da]=a.data_nascimento.split('-').map(Number);const[,,db]=b.data_nascimento.split('-').map(Number);return da-db;}).map(u=>{const[,m,d]=u.data_nascimento.split('-').map(Number);return`<div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg4);border-radius:var(--rs);margin-bottom:5px">${avHTML(u,34,11)}
+      <div style="flex:1"><div style="font-size:12px;font-weight:700">${u.nome}</div><div style="font-size:10px;color:var(--gray3)">Dia ${String(d).padStart(2,'0')} · Faixa ${u.faixa}</div></div>
+    </div>`;}).join('')}`).join('')}
+    ${!com.length?'<div class="empty"><div class="ei">🎂</div><h3>Nenhum aluno com data de nascimento</h3><p>Cadastre as datas de nascimento nos perfis</p></div>':''}
+  </div>`;
+  document.body.appendChild(o);
+}
 function parabens(uid){
   const u=DB.u.find(u=>u.id===uid);if(!u?.telefone){toast('Telefone não cadastrado','err');return;}
   window.open(`https://wa.me/55${u.telefone.replace(/\D/g,'')}?text=${encodeURIComponent(`🎂 Parabéns ${u.nome.split(' ')[0]}! A família Flash Team deseja um feliz aniversário! Que venham muitos anos de evolução no tatame! 🥋⚡`)}`,'_blank');
+}
+function parabensColega(uid){
+  const c=DB.u.find(u=>u.id===uid);if(!c?.telefone){toast('Telefone do colega não cadastrado','err');return;}
+  window.open(`https://wa.me/55${c.telefone.replace(/\D/g,'')}?text=${encodeURIComponent(`🎂 Parabéns ${c.nome.split(' ')[0]}! A equipe Flash Team deseja um feliz aniversário! Que venham muitos anos de evolução no tatame! 🥋⚡`)}`,'_blank');
 }
 
 // ══ UI HELPERS ══
